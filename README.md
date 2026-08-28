@@ -12,39 +12,47 @@ The early stages intentionally avoid hiding the RAG pipeline behind high-level f
 
 ## Current Status
 
-## Phase 3 — Chunking & Metadata Pipeline
+## Phase 4 — Embeddings & Vector Store
 
-Phase 3 introduces the retrieval-ready chunking layer between document ingestion and embeddings.
+Phase 4 adds the semantic indexing layer that converts retrieval-ready chunks into numerical vectors and stores them in a persistent local vector database.
 
 ### Implemented
 
-- Retrieval-ready `Chunk` data model
-- Configurable text chunk size and overlap
-- Deterministic SHA-256 chunk identifiers
-- `Document` → `Chunk` conversion pipeline
-- Sequential chunk indexing
-- Source and file-type preservation
-- Deep-copy metadata preservation
-- Empty-text and boundary edge-case handling
-- Public chunking package API
-- Automated unit and integration tests
+- Pluggable `EmbeddingProvider` interface
+- Local Sentence Transformers embedding provider
+- `sentence-transformers/all-MiniLM-L6-v2`
+- 384-dimensional normalized embeddings
+- Single-text and batch embedding support
+- `Chunk` → `EmbeddedChunk` pipeline
+- Embedding dimension validation
+- Persistent local ChromaDB vector store
+- Chunk upsert and duplicate-safe indexing
+- Vector similarity queries
+- Chunk deletion
+- Document-level deletion
+- Collection clearing
+- Source and metadata preservation inside the vector index
+- Persistent data across vector-store instances
+- Real semantic retrieval verification
 
-### Chunking Flow
+### Semantic Indexing Flow
 
 ```text
+PDF / DOCX / TXT
+       ↓
 Document
-   ↓
-TextChunker
-   ↓
-Overlapping text segments
-   ↓
-Deterministic chunk IDs
-   ↓
+       ↓
+Chunking
+       ↓
 Chunk objects
-   ↓
-Metadata-preserving retrieval input
-
----
+       ↓
+MiniLM embeddings
+       ↓
+384-dimensional vectors
+       ↓
+ChromaDB
+       ↓
+Semantic similarity search
 
 ## High-Level Architecture
 

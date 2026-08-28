@@ -12,6 +12,8 @@ requires-python = ">=3.11"
 dependencies = [
     "pypdf",
     "python-docx",
+    "sentence-transformers",
+    "chromadb",
 ]
 
 [project.optional-dependencies]

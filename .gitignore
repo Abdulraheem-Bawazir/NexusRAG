@@ -36,3 +36,6 @@ data/raw/*
 # Generated/processed documents
 data/processed/*
 !data/processed/.gitkeep
+
+# Local vector databases / generated RAG data
+data/semantic_verification/
