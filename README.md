@@ -12,27 +12,37 @@ The early stages intentionally avoid hiding the RAG pipeline behind high-level f
 
 ## Current Status
 
-**Phase 2 — Document Ingestion: Complete ✅**
+## Phase 3 — Chunking & Metadata Pipeline
 
-NexusRAG currently supports:
+Phase 3 introduces the retrieval-ready chunking layer between document ingestion and embeddings.
 
-* TXT document ingestion
-* PDF document ingestion
-* DOCX document ingestion
-* Page-aware PDF extraction
-* Normalized internal `Document` representation
-* Unified document loading interface
-* Source metadata preservation
-* UTF-8 BOM handling
-* Input validation
-* Private document protection through `.gitignore`
-* Automated testing with pytest
+### Implemented
 
-**Current test suite: 29 passing tests**
+- Retrieval-ready `Chunk` data model
+- Configurable text chunk size and overlap
+- Deterministic SHA-256 chunk identifiers
+- `Document` → `Chunk` conversion pipeline
+- Sequential chunk indexing
+- Source and file-type preservation
+- Deep-copy metadata preservation
+- Empty-text and boundary edge-case handling
+- Public chunking package API
+- Automated unit and integration tests
 
-Next milestone:
+### Chunking Flow
 
-**Phase 3 — Chunking**
+```text
+Document
+   ↓
+TextChunker
+   ↓
+Overlapping text segments
+   ↓
+Deterministic chunk IDs
+   ↓
+Chunk objects
+   ↓
+Metadata-preserving retrieval input
 
 ---
 

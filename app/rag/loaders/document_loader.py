@@ -5,7 +5,6 @@ from app.rag.loaders.docx_loader import load_docx
 from app.rag.loaders.pdf_loader import load_pdf
 from app.rag.loaders.txt_loader import load_txt
 
-
 SUPPORTED_EXTENSIONS = {".pdf", ".docx", ".txt"}
 
 

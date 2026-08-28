@@ -1,11 +1,13 @@
 from dataclasses import dataclass, field
 from typing import Any
 
-
 SUPPORTED_FILE_TYPES = {"pdf", "docx", "txt"}
 
 
 @dataclass(slots=True)
+
+##automatically gives us things like an initializer.##
+
 class Document:
     """Normalized representation of an ingested document."""
 

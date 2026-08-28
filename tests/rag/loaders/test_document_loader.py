@@ -2,9 +2,10 @@ from pathlib import Path
 
 import pytest
 from docx import Document as DocxDocument
+from reportlab.pdfgen import canvas
 
 from app.rag.loaders.document_loader import load_document
-from reportlab.pdfgen import canvas
+
 
 def test_load_document_routes_txt(tmp_path: Path) -> None:
     file_path = tmp_path / "example.txt"
