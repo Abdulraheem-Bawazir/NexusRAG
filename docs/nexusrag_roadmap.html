@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NexusRAG — Project Roadmap</title>
+<style>
+  :root {
+    --bg: #050505;
+    --panel: #0d0b0c;
+    --panel-2: #151011;
+    --text: #f3eeee;
+    --muted: #a48f93;
+    --line: #3a171b;
+    --accent: #ff334d;
+    --accent-2: #8b000f;
+    --good: #d9d9d9;
+    --warn: #ff7a00;
+    --danger: #ff2442;
+    --shadow: 0 18px 45px rgba(0,0,0,.28);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: "Segoe UI", Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    background:
+      radial-gradient(circle at 15% 10%, rgba(255,34,68,.12), transparent 26%),
+      radial-gradient(circle at 85% 0%, rgba(120,0,15,.16), transparent 30%),
+      var(--bg);
+    color: var(--text);
+  }
+
+  button, input, textarea, select { font: inherit; }
+
+  .shell {
+    width: min(1440px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 30px 0 60px;
+  }
+
+  .hero {
+    isolation: isolate;
+
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(145deg, rgba(20,10,12,.98), rgba(5,5,5,.98));
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    padding: 28px;
+    box-shadow: var(--shadow);
+  }
+
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      repeating-linear-gradient(
+        180deg,
+        rgba(255,255,255,.012) 0px,
+        rgba(255,255,255,.012) 1px,
+        transparent 1px,
+        transparent 4px
+      );
+    opacity: .42;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .hero::after {
+    content: "";
+    position: absolute;
+    width: 260px;
+    height: 260px;
+    right: -80px;
+    top: -110px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,36,66,.20), transparent 65%);
+    pointer-events: none;
+  }
+
+  .eyebrow {
+    color: var(--accent);
+    font-size: 12px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    font-weight: 800;
+  }
+
+  h1 {
+    text-shadow: 0 0 18px rgba(255,36,66,.18), 0 0 48px rgba(120,0,15,.14);
+    margin: 8px 0 6px;
+    font-size: clamp(30px, 5vw, 52px);
+    line-height: 1;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    margin: 0;
+    max-width: 850px;
+    line-height: 1.65;
+  }
+
+  .top-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 22px;
+  }
+
+  .btn {
+    border: 1px solid var(--line);
+    background: var(--panel-2);
+    color: var(--text);
+    padding: 10px 14px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: .18s ease;
+  }
+
+  .btn:hover { transform: translateY(-1px); border-color: #3c587d; }
+  .btn.primary {
+    background: linear-gradient(135deg, rgba(255,36,66,.18), rgba(110,0,14,.26));
+    border-color: rgba(255,36,66,.48);
+  }
+  .btn.danger { color: #ffd5dd; border-color: rgba(251,113,133,.35); }
+
+  .save-state {
+    margin-left: auto;
+    align-self: center;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    margin: 18px 0;
+  }
+
+  .stat {
+    background: rgba(13,27,45,.88);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 18px;
+  }
+
+  .stat .label { color: var(--muted); font-size: 13px; }
+  .stat .value { font-size: 30px; font-weight: 800; margin-top: 4px; }
+  .stat .tiny { color: var(--muted); font-size: 12px; margin-top: 4px; }
+
+  .overall {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 18px;
+    margin-bottom: 18px;
+  }
+
+  .overall-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 18px;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .progress-track {
+    height: 11px;
+    background: #070707;
+    border: 1px solid #351419;
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #ff2945, #6f000e);
+    transition: width .25s ease;
+  }
+
+  .toolbar {
+    position: sticky;
+    top: 10px;
+    z-index: 15;
+    display: grid;
+    grid-template-columns: 1fr 190px 150px;
+    gap: 10px;
+    padding: 12px;
+    margin-bottom: 18px;
+    background: rgba(5,5,5,.90);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+  }
+
+  .control {
+    width: 100%;
+    padding: 11px 12px;
+    border-radius: 11px;
+    border: 1px solid var(--line);
+    background: #0a0809;
+    color: var(--text);
+    outline: none;
+  }
+
+  .control:focus { border-color: rgba(255,36,66,.62); }
+
+  .roadmap {
+    display: grid;
+    gap: 14px;
+  }
+
+  .phase {
+    background: linear-gradient(145deg, rgba(15,10,11,.99), rgba(7,7,7,.99));
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 10px 24px rgba(0,0,0,.16);
+  }
+
+  .phase.active-phase {
+    border-color: rgba(255,36,66,.60);
+    box-shadow: 0 0 0 1px rgba(255,36,66,.14), 0 0 32px rgba(120,0,15,.18), 0 10px 28px rgba(0,0,0,.34);
+  }
+
+  .phase-header {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 14px;
+    align-items: center;
+    padding: 18px;
+    cursor: pointer;
+  }
+
+  .phase-index {
+    width: 52px;
+    height: 52px;
+    border-radius: 15px;
+    display: grid;
+    place-items: center;
+    font-weight: 900;
+    color: var(--accent);
+    background: rgba(255,36,66,.08);
+    border: 1px solid rgba(255,36,66,.24);
+  }
+
+  .phase-title {
+    letter-spacing: .01em;
+    margin: 0;
+    font-size: 19px;
+  }
+
+  .phase-desc {
+    margin: 5px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .phase-meta {
+    min-width: 180px;
+    text-align: right;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 9px;
+    border-radius: 999px;
+    font-size: 12px;
+    border: 1px solid var(--line);
+    color: var(--muted);
+  }
+
+  .badge.done { color: var(--good); border-color: rgba(220,220,220,.20); background: rgba(220,220,220,.04); }
+  .badge.progress { color: var(--warn); border-color: rgba(250,204,21,.28); background: rgba(250,204,21,.06); }
+  .badge.todo { color: #b6c4d7; }
+
+  .phase-mini {
+    width: 180px;
+    height: 7px;
+    margin: 9px 0 0 auto;
+    background: #070707;
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .phase-mini > div {
+    height: 100%;
+    background: linear-gradient(90deg, #ff2945, #6f000e);
+  }
+
+  .phase-body {
+    display: none;
+    border-top: 1px solid var(--line);
+    padding: 10px 18px 18px;
+  }
+
+  .phase.open .phase-body { display: block; }
+
+  .task {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 12px;
+    padding: 11px 2px;
+    border-bottom: 1px solid rgba(36,57,86,.58);
+    align-items: start;
+  }
+
+  .task:last-of-type { border-bottom: 0; }
+
+  .task input[type="checkbox"] {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    margin-top: 2px;
+    border: 1px solid #5c2028;
+    border-radius: 6px;
+    background: #090708;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+  }
+
+  .task input[type="checkbox"]:checked {
+    background: linear-gradient(135deg, #ff2945, #72000f);
+    border-color: transparent;
+  }
+
+  .task input[type="checkbox"]:checked::after {
+    content: "✓";
+    color: #070707;
+    font-size: 14px;
+    font-weight: 900;
+  }
+
+  .task-title {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .task.done .task-title {
+    text-decoration: line-through;
+    color: #71859e;
+  }
+
+  .task-tag {
+    display: inline-block;
+    margin-left: 8px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--muted);
+    padding: 3px 6px;
+    border-radius: 6px;
+    border: 1px solid var(--line);
+    vertical-align: 1px;
+  }
+
+  .notes-label {
+    display: block;
+    margin-top: 14px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .notes {
+    width: 100%;
+    min-height: 76px;
+    margin-top: 7px;
+    resize: vertical;
+    padding: 11px 12px;
+    border-radius: 11px;
+    border: 1px solid var(--line);
+    background: #090708;
+    color: var(--text);
+    outline: none;
+  }
+
+  .notes:focus { border-color: rgba(255,36,66,.52); }
+
+  .footer {
+    margin-top: 22px;
+    color: var(--muted);
+    font-size: 12px;
+    text-align: center;
+    line-height: 1.6;
+  }
+
+  .hidden { display: none !important; }
+
+  @media (max-width: 900px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .toolbar { grid-template-columns: 1fr; position: static; }
+    .phase-header { grid-template-columns: auto 1fr; }
+    .phase-meta { grid-column: 1 / -1; text-align: left; }
+    .phase-mini { margin-left: 0; width: 100%; }
+    .save-state { width: 100%; margin-left: 0; }
+  }
+
+  @media (max-width: 560px) {
+    .shell { width: min(100% - 18px, 1440px); padding-top: 12px; }
+    .hero {
+    isolation: isolate;
+ padding: 20px; border-radius: 18px; }
+    .stats { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="eyebrow">NEXUSRAG // AI ENGINEERING SYSTEM</div>
+      <h1>NexusRAG // CONTROL</h1>
+      <p class="subtitle">
+        Private-document RAG engineering command center. Track development from foundation and document ingestion
+        through retrieval, grounded generation, evaluation, deployment, and portfolio release.
+      </p>
+      <div class="top-actions">
+        <button class="btn primary" id="expandCurrent">Open Current Phase</button>
+        <button class="btn" id="expandAll">Expand All</button>
+        <button class="btn" id="collapseAll">Collapse All</button>
+        <button class="btn" id="exportBtn">Export Progress</button>
+        <button class="btn" id="importBtn">Import Progress</button>
+        <button class="btn danger" id="resetBtn">Reset Progress</button>
+        <span class="save-state" id="saveState">Autosave: ready</span>
+        <input type="file" id="importFile" accept=".json,application/json" hidden />
+      </div>
+    </section>
+
+    <section class="stats">
+      <div class="stat">
+        <div class="label">Overall Completion</div>
+        <div class="value" id="overallPercent">0%</div>
+        <div class="tiny">Across every project task</div>
+      </div>
+      <div class="stat">
+        <div class="label">Tasks Completed</div>
+        <div class="value" id="taskCount">0 / 0</div>
+        <div class="tiny">Checkbox progress</div>
+      </div>
+      <div class="stat">
+        <div class="label">Phases Completed</div>
+        <div class="value" id="phaseCount">0 / 0</div>
+        <div class="tiny">A phase completes at 100%</div>
+      </div>
+      <div class="stat">
+        <div class="label">Current Focus</div>
+        <div class="value" id="currentPhase" style="font-size:22px">—</div>
+        <div class="tiny" id="currentPhaseTiny">Next unfinished phase</div>
+      </div>
+    </section>
+
+    <section class="overall">
+      <div class="overall-head">
+        <strong>Project Completion</strong>
+        <span id="overallText" style="color:var(--muted)">0 of 0 tasks</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="overallBar"></div></div>
+    </section>
+
+    <section class="toolbar">
+      <input class="control" id="searchInput" type="search" placeholder="Search phases or tasks..." />
+      <select class="control" id="statusFilter">
+        <option value="all">All statuses</option>
+        <option value="todo">Not started</option>
+        <option value="progress">In progress</option>
+        <option value="done">Completed</option>
+      </select>
+      <select class="control" id="viewFilter">
+        <option value="all">All phases</option>
+        <option value="current">Current only</option>
+        <option value="remaining">Remaining only</option>
+      </select>
+    </section>
+
+    <section class="roadmap" id="roadmap"></section>
+
+    <div class="footer">
+      Progress and notes are stored automatically in this browser using <strong>localStorage</strong>.
+      Export a JSON backup before clearing browser data or moving to another computer.
+    </div>
+  </main>
+
+<script>
+const STORAGE_KEY = "nexusrag-roadmap-v1";
+
+const phases = [
+  {
+    id: "p0",
+    number: "00",
+    title: "Project Definition & Architecture",
+    description: "Define what NexusRAG is, what it is not, and the production-style architecture we will build.",
+    tasks: [
+      ["p0t1", "Define NexusRAG as a private-document RAG assistant", true, "Architecture"],
+      ["p0t2", "Define supported document flow: PDF / DOCX / TXT → parse → chunk → embed → retrieve → answer", true, "Architecture"],
+      ["p0t3", "Define source-citation requirement for generated answers", true, "Quality"],
+      ["p0t4", "Define modular package boundaries so components can be tested independently", true, "Engineering"],
+      ["p0t5", "Create the initial phase-by-phase implementation roadmap", true, "Planning"]
+    ]
+  },
+  {
+    id: "p1",
+    number: "01",
+    title: "Foundation & Repository Engineering",
+    description: "Create a professional Python project foundation with repeatable local setup, tests, and version control.",
+    tasks: [
+      ["p1t1", "Create the NexusRAG repository and Python project structure", true, "Repository"],
+      ["p1t2", "Create and use a virtual environment", true, "Environment"],
+      ["p1t3", "Configure project dependencies and development dependencies", true, "Environment"],
+      ["p1t4", "Add .gitignore and clean repository hygiene", true, "Git"],
+      ["p1t5", "Configure pytest and establish the test suite", true, "Testing"],
+      ["p1t6", "Run the project locally and verify the foundation works", true, "Verification"],
+      ["p1t7", "Connect the repository to GitHub and push main", true, "GitHub"]
+    ]
+  },
+  {
+    id: "p2",
+    number: "02",
+    title: "Document Ingestion & Parsing",
+    description: "Build and verify the first real data path: reliable loading and normalization of private documents.",
+    tasks: [
+      ["p2t1", "Implement a common document representation with text and metadata", true, "Core"],
+      ["p2t2", "Implement TXT document loading", true, "Parser"],
+      ["p2t3", "Implement PDF document loading", true, "Parser"],
+      ["p2t4", "Implement DOCX document loading", true, "Parser"],
+      ["p2t5", "Validate file types and handle unsupported / invalid inputs cleanly", true, "Reliability"],
+      ["p2t6", "Add parser and ingestion tests", true, "Testing"],
+      ["p2t7", "Verify the full test suite reaches 24 passing tests", true, "Verification"],
+      ["p2t8", "Update README to accurately describe work completed through Phase 2", true, "Docs"],
+      ["p2t9", "Add this interactive NexusRAG roadmap dashboard to the repository", false, "Portfolio"],
+      ["p2t10", "Commit and push the Phase 2 completion checkpoint", false, "Git"]
+    ]
+  },
+  {
+    id: "p3",
+    number: "03",
+    title: "Chunking & Metadata Pipeline",
+    description: "Turn normalized documents into retrieval-ready chunks while preserving traceable source information.",
+    tasks: [
+      ["p3t1", "Define the chunk data model and required metadata fields", false, "Design"],
+      ["p3t2", "Implement deterministic text chunking with configurable chunk size and overlap", false, "Core"],
+      ["p3t3", "Preserve document ID, filename, source type, page/section data where available", false, "Metadata"],
+      ["p3t4", "Generate stable chunk IDs for repeatable indexing", false, "Metadata"],
+      ["p3t5", "Handle short documents, empty pages, whitespace, and boundary edge cases", false, "Reliability"],
+      ["p3t6", "Add unit tests for chunk size, overlap, ordering, IDs, and metadata preservation", false, "Testing"],
+      ["p3t7", "Run the complete suite and fix regressions", false, "Verification"],
+      ["p3t8", "Document the chunking strategy and trade-offs in the README", false, "Docs"],
+      ["p3t9", "Commit and push completed Phase 3", false, "Git"]
+    ]
+  },
+  {
+    id: "p4",
+    number: "04",
+    title: "Embeddings & Vector Store",
+    description: "Create a persistent semantic index that can ingest chunks and perform similarity search.",
+    tasks: [
+      ["p4t1", "Define an embedding-provider interface so the model can be swapped cleanly", false, "Architecture"],
+      ["p4t2", "Integrate a local/open embedding model suitable for semantic retrieval", false, "Embeddings"],
+      ["p4t3", "Implement batch embedding for document chunks", false, "Performance"],
+      ["p4t4", "Normalize and validate embedding dimensions / output shape", false, "Reliability"],
+      ["p4t5", "Integrate a persistent vector store", false, "Vector DB"],
+      ["p4t6", "Implement add/upsert, query, delete, and collection/index lifecycle operations", false, "Vector DB"],
+      ["p4t7", "Store chunk text and source metadata alongside vectors", false, "Metadata"],
+      ["p4t8", "Prevent accidental duplicate indexing of the same chunks", false, "Reliability"],
+      ["p4t9", "Add integration tests for embedding and vector persistence", false, "Testing"],
+      ["p4t10", "Commit and push completed Phase 4", false, "Git"]
+    ]
+  },
+  {
+    id: "p5",
+    number: "05",
+    title: "Retrieval Engine",
+    description: "Build the retrieval layer that converts a user question into high-quality evidence for generation.",
+    tasks: [
+      ["p5t1", "Implement query embedding and top-k semantic retrieval", false, "Retrieval"],
+      ["p5t2", "Return ranked chunks with similarity scores and metadata", false, "Retrieval"],
+      ["p5t3", "Add configurable score thresholds and top-k controls", false, "Quality"],
+      ["p5t4", "Add metadata filtering where useful", false, "Retrieval"],
+      ["p5t5", "Implement keyword/BM25 retrieval for exact-term matching", false, "Hybrid"],
+      ["p5t6", "Fuse semantic and keyword results into hybrid retrieval", false, "Hybrid"],
+      ["p5t7", "Add optional reranking abstraction for stronger final context selection", false, "Reranking"],
+      ["p5t8", "Deduplicate and order retrieved evidence deterministically", false, "Reliability"],
+      ["p5t9", "Create retrieval tests using known questions and expected source chunks", false, "Testing"],
+      ["p5t10", "Document retrieval configuration and trade-offs", false, "Docs"],
+      ["p5t11", "Commit and push completed Phase 5", false, "Git"]
+    ]
+  },
+  {
+    id: "p6",
+    number: "06",
+    title: "Grounded Answer Generation & Citations",
+    description: "Generate answers only from retrieved evidence and make every answer traceable back to its sources.",
+    tasks: [
+      ["p6t1", "Define an LLM/provider abstraction for generation", false, "Architecture"],
+      ["p6t2", "Create the grounded RAG prompt with explicit context-use rules", false, "Prompting"],
+      ["p6t3", "Build context assembly with token/length safeguards", false, "Context"],
+      ["p6t4", "Generate answers from retrieved chunks", false, "Generation"],
+      ["p6t5", "Attach source citations to answer claims", false, "Citations"],
+      ["p6t6", "Return a safe 'not enough evidence' response when context is insufficient", false, "Guardrail"],
+      ["p6t7", "Prevent prompt/context formatting from losing source attribution", false, "Reliability"],
+      ["p6t8", "Add answer-generation and citation tests with deterministic mocks", false, "Testing"],
+      ["p6t9", "Verify an end-to-end document → question → cited answer flow", false, "E2E"],
+      ["p6t10", "Commit and push completed Phase 6", false, "Git"]
+    ]
+  },
+  {
+    id: "p7",
+    number: "07",
+    title: "FastAPI Application Layer",
+    description: "Expose NexusRAG through a clean backend API with validation, error handling, and application services.",
+    tasks: [
+      ["p7t1", "Create the FastAPI application and application/service layer boundaries", false, "API"],
+      ["p7t2", "Add health/readiness endpoints", false, "Operations"],
+      ["p7t3", "Create document upload / ingestion endpoint", false, "API"],
+      ["p7t4", "Create document listing and deletion endpoints", false, "API"],
+      ["p7t5", "Create query endpoint returning answer, citations, and retrieval metadata", false, "API"],
+      ["p7t6", "Add Pydantic request/response schemas", false, "Contracts"],
+      ["p7t7", "Add structured application errors and HTTP error mapping", false, "Reliability"],
+      ["p7t8", "Add configuration through environment variables without committing secrets", false, "Config"],
+      ["p7t9", "Add API integration tests", false, "Testing"],
+      ["p7t10", "Generate/review OpenAPI documentation", false, "Docs"],
+      ["p7t11", "Commit and push completed Phase 7", false, "Git"]
+    ]
+  },
+  {
+    id: "p8",
+    number: "08",
+    title: "Evaluation, Guardrails & RAG Quality",
+    description: "Measure retrieval and answer quality instead of making unverified claims about accuracy.",
+    tasks: [
+      ["p8t1", "Create a small version-controlled evaluation dataset with questions and expected evidence", false, "Evaluation"],
+      ["p8t2", "Measure retrieval Hit Rate / Recall@K on the evaluation set", false, "Metrics"],
+      ["p8t3", "Measure MRR or another ranked-retrieval metric", false, "Metrics"],
+      ["p8t4", "Evaluate citation/source correctness", false, "Evaluation"],
+      ["p8t5", "Evaluate answer groundedness / faithfulness using reproducible criteria", false, "Evaluation"],
+      ["p8t6", "Test no-answer behavior for questions unsupported by the indexed documents", false, "Guardrail"],
+      ["p8t7", "Test prompt-injection content inside documents and strengthen instructions", false, "Security"],
+      ["p8t8", "Create a regression command/report for future retrieval changes", false, "Testing"],
+      ["p8t9", "Record genuine baseline metrics only — no invented accuracy claims", false, "Portfolio"],
+      ["p8t10", "Commit and push completed Phase 8", false, "Git"]
+    ]
+  },
+  {
+    id: "p9",
+    number: "09",
+    title: "User Interface & End-to-End UX",
+    description: "Add a clean product surface for document management, querying, source inspection, and demos.",
+    tasks: [
+      ["p9t1", "Create the NexusRAG web UI shell", false, "Frontend"],
+      ["p9t2", "Add document upload with visible ingestion status", false, "UX"],
+      ["p9t3", "Add indexed-document list and delete/reindex controls", false, "UX"],
+      ["p9t4", "Add question input and answer display", false, "UX"],
+      ["p9t5", "Render citations as inspectable source cards/snippets", false, "Citations"],
+      ["p9t6", "Show useful loading, empty, error, and no-evidence states", false, "UX"],
+      ["p9t7", "Connect the UI to the FastAPI backend", false, "Integration"],
+      ["p9t8", "Verify the complete user journey with multiple document formats", false, "E2E"],
+      ["p9t9", "Capture clean screenshots for README and portfolio use", false, "Portfolio"],
+      ["p9t10", "Commit and push completed Phase 9", false, "Git"]
+    ]
+  },
+  {
+    id: "p10",
+    number: "10",
+    title: "Observability, Reliability & Performance",
+    description: "Make behavior visible and measure latency, failures, retrieval behavior, and resource usage.",
+    tasks: [
+      ["p10t1", "Add structured logging across ingestion, retrieval, generation, and API requests", false, "Observability"],
+      ["p10t2", "Add request/correlation IDs across a query lifecycle", false, "Observability"],
+      ["p10t3", "Log retrieval timings, generation timings, selected chunk counts, and errors", false, "Metrics"],
+      ["p10t4", "Ensure logs do not expose document contents or secrets unnecessarily", false, "Privacy"],
+      ["p10t5", "Add graceful handling for parser, embedding, vector-store, and LLM failures", false, "Reliability"],
+      ["p10t6", "Measure baseline ingestion and query latency on the development machine", false, "Performance"],
+      ["p10t7", "Profile obvious bottlenecks and optimize only where measurements justify it", false, "Performance"],
+      ["p10t8", "Document measured limits and hardware/configuration used", false, "Portfolio"],
+      ["p10t9", "Commit and push completed Phase 10", false, "Git"]
+    ]
+  },
+  {
+    id: "p11",
+    number: "11",
+    title: "Docker, CI/CD & Deployment",
+    description: "Package NexusRAG reproducibly, automate verification, and deploy a demonstrable production-style build.",
+    tasks: [
+      ["p11t1", "Create production-ready Dockerfile(s)", false, "Docker"],
+      ["p11t2", "Create docker-compose configuration for required local services", false, "Docker"],
+      ["p11t3", "Add persistent volumes where indexes/data must survive restarts", false, "Docker"],
+      ["p11t4", "Keep runtime configuration and secrets outside the image", false, "Security"],
+      ["p11t5", "Verify clean-clone → configure → Docker startup instructions", false, "Verification"],
+      ["p11t6", "Add GitHub Actions for lint/test/build checks", false, "CI/CD"],
+      ["p11t7", "Make CI fail on broken tests or quality checks", false, "CI/CD"],
+      ["p11t8", "Choose and document a deployment target/reference architecture", false, "Deployment"],
+      ["p11t9", "Deploy a public demo only if it can be done safely and within chosen cost limits", false, "Deployment"],
+      ["p11t10", "Verify deployed health, ingestion, query, and citation flow", false, "E2E"],
+      ["p11t11", "Commit and push completed Phase 11", false, "Git"]
+    ]
+  },
+  {
+    id: "p12",
+    number: "12",
+    title: "Portfolio, Documentation & Release",
+    description: "Turn the working engineering project into evidence recruiters and engineers can quickly understand and verify.",
+    tasks: [
+      ["p12t1", "Rewrite README as a professional project landing page", false, "README"],
+      ["p12t2", "Add architecture diagram and end-to-end RAG data-flow diagram", false, "Docs"],
+      ["p12t3", "Document setup, environment configuration, local run, Docker run, and tests", false, "Docs"],
+      ["p12t4", "Document design decisions and engineering trade-offs", false, "Docs"],
+      ["p12t5", "Publish genuine evaluation and performance results with methodology", false, "Evidence"],
+      ["p12t6", "Add screenshots/GIF or a short demo workflow", false, "Portfolio"],
+      ["p12t7", "Add repository topics, description, license, and clean project metadata", false, "GitHub"],
+      ["p12t8", "Audit repository for secrets, generated junk, dead code, and misleading claims", false, "Audit"],
+      ["p12t9", "Create concise CV and LinkedIn project descriptions based only on implemented features", false, "Career"],
+      ["p12t10", "Create a final release tag after all tests and checks pass", false, "Release"],
+      ["p12t11", "Final clean-clone verification from documentation alone", false, "Verification"],
+      ["p12t12", "Commit/push final documentation and release state", false, "Git"]
+    ]
+  }
+];
+
+const defaultState = {
+  checked: Object.fromEntries(phases.flatMap(p => p.tasks.map(t => [t[0], !!t[2]]))),
+  notes: Object.fromEntries(phases.map(p => [p.id, ""])),
+  open: { p2: true, p3: true },
+  updatedAt: null
+};
+
+let state = loadState();
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return structuredClone(defaultState);
+    const saved = JSON.parse(raw);
+    return {
+      checked: { ...defaultState.checked, ...(saved.checked || {}) },
+      notes: { ...defaultState.notes, ...(saved.notes || {}) },
+      open: { ...defaultState.open, ...(saved.open || {}) },
+      updatedAt: saved.updatedAt || null
+    };
+  } catch {
+    return structuredClone(defaultState);
+  }
+}
+
+function saveState() {
+  state.updatedAt = new Date().toISOString();
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  const el = document.getElementById("saveState");
+  el.textContent = "Autosaved " + new Date().toLocaleTimeString([], {hour: "2-digit", minute:"2-digit", second:"2-digit"});
+}
+
+function phaseStats(phase) {
+  const total = phase.tasks.length;
+  const done = phase.tasks.filter(t => state.checked[t[0]]).length;
+  const percent = total ? Math.round(done / total * 100) : 0;
+  const status = done === 0 ? "todo" : done === total ? "done" : "progress";
+  return { total, done, percent, status };
+}
+
+function getCurrentPhase() {
+  return phases.find(p => phaseStats(p).done < p.tasks.length) || phases[phases.length - 1];
+}
+
+function badgeText(status) {
+  return status === "done" ? "Completed" : status === "progress" ? "In Progress" : "Not Started";
+}
+
+function render() {
+  const roadmap = document.getElementById("roadmap");
+  const search = document.getElementById("searchInput").value.trim().toLowerCase();
+  const statusFilter = document.getElementById("statusFilter").value;
+  const viewFilter = document.getElementById("viewFilter").value;
+  const current = getCurrentPhase();
+
+  roadmap.innerHTML = "";
+
+  phases.forEach(phase => {
+    const ps = phaseStats(phase);
+    const matchesSearch = !search ||
+      phase.title.toLowerCase().includes(search) ||
+      phase.description.toLowerCase().includes(search) ||
+      phase.tasks.some(t => t[1].toLowerCase().includes(search) || t[3].toLowerCase().includes(search));
+
+    const matchesStatus = statusFilter === "all" || ps.status === statusFilter;
+    const matchesView =
+      viewFilter === "all" ||
+      (viewFilter === "current" && phase.id === current.id) ||
+      (viewFilter === "remaining" && ps.status !== "done");
+
+    if (!matchesSearch || !matchesStatus || !matchesView) return;
+
+    const card = document.createElement("article");
+    card.className = "phase" + (state.open[phase.id] ? " open" : "") + (phase.id === current.id ? " active-phase" : "");
+    card.dataset.phase = phase.id;
+
+    const header = document.createElement("div");
+    header.className = "phase-header";
+    header.innerHTML = `
+      <div class="phase-index">${phase.number}</div>
+      <div>
+        <h2 class="phase-title">${phase.title}${phase.id === current.id ? ' <span class="task-tag">current</span>' : ""}</h2>
+        <p class="phase-desc">${phase.description}</p>
+      </div>
+      <div class="phase-meta">
+        <span class="badge ${ps.status}">${badgeText(ps.status)} · ${ps.done}/${ps.total}</span>
+        <div class="phase-mini"><div style="width:${ps.percent}%"></div></div>
+      </div>
+    `;
+    header.addEventListener("click", () => {
+      state.open[phase.id] = !state.open[phase.id];
+      saveState();
+      render();
+    });
+
+    const body = document.createElement("div");
+    body.className = "phase-body";
+
+    phase.tasks.forEach(task => {
+      const [taskId, label, , tag] = task;
+      const row = document.createElement("label");
+      row.className = "task" + (state.checked[taskId] ? " done" : "");
+      row.innerHTML = `
+        <input type="checkbox" data-task="${taskId}" ${state.checked[taskId] ? "checked" : ""}>
+        <div class="task-title">${label}<span class="task-tag">${tag}</span></div>
+      `;
+
+      const checkbox = row.querySelector("input");
+      checkbox.addEventListener("click", e => e.stopPropagation());
+      checkbox.addEventListener("change", () => {
+        state.checked[taskId] = checkbox.checked;
+        saveState();
+        render();
+      });
+
+      body.appendChild(row);
+    });
+
+    const notesLabel = document.createElement("label");
+    notesLabel.className = "notes-label";
+    notesLabel.textContent = "Phase notes / verification evidence";
+    const notes = document.createElement("textarea");
+    notes.className = "notes";
+    notes.placeholder = "Example: commands run, test result, commit hash, decisions, blockers...";
+    notes.value = state.notes[phase.id] || "";
+    notes.addEventListener("input", () => {
+      state.notes[phase.id] = notes.value;
+      saveState();
+    });
+    body.appendChild(notesLabel);
+    body.appendChild(notes);
+
+    card.appendChild(header);
+    card.appendChild(body);
+    roadmap.appendChild(card);
+  });
+
+  updateSummary();
+}
+
+function updateSummary() {
+  const allTasks = phases.flatMap(p => p.tasks);
+  const total = allTasks.length;
+  const done = allTasks.filter(t => state.checked[t[0]]).length;
+  const percent = Math.round(done / total * 100);
+  const completedPhases = phases.filter(p => phaseStats(p).status === "done").length;
+  const current = getCurrentPhase();
+
+  document.getElementById("overallPercent").textContent = percent + "%";
+  document.getElementById("taskCount").textContent = `${done} / ${total}`;
+  document.getElementById("phaseCount").textContent = `${completedPhases} / ${phases.length}`;
+  document.getElementById("currentPhase").textContent = `Phase ${current.number}`;
+  document.getElementById("currentPhaseTiny").textContent = current.title;
+  document.getElementById("overallText").textContent = `${done} of ${total} tasks`;
+  document.getElementById("overallBar").style.width = percent + "%";
+
+  if (state.updatedAt) {
+    const d = new Date(state.updatedAt);
+    document.getElementById("saveState").textContent =
+      "Last saved " + d.toLocaleString([], {dateStyle:"medium", timeStyle:"short"});
+  }
+}
+
+document.getElementById("searchInput").addEventListener("input", render);
+document.getElementById("statusFilter").addEventListener("change", render);
+document.getElementById("viewFilter").addEventListener("change", render);
+
+document.getElementById("expandAll").addEventListener("click", () => {
+  phases.forEach(p => state.open[p.id] = true);
+  saveState(); render();
+});
+
+document.getElementById("collapseAll").addEventListener("click", () => {
+  phases.forEach(p => state.open[p.id] = false);
+  saveState(); render();
+});
+
+document.getElementById("expandCurrent").addEventListener("click", () => {
+  const current = getCurrentPhase();
+  phases.forEach(p => state.open[p.id] = p.id === current.id);
+  saveState(); render();
+  setTimeout(() => {
+    document.querySelector(`[data-phase="${current.id}"]`)?.scrollIntoView({behavior:"smooth", block:"start"});
+  }, 50);
+});
+
+document.getElementById("exportBtn").addEventListener("click", () => {
+  const payload = {
+    project: "NexusRAG",
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    state
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "nexusrag-progress.json";
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+document.getElementById("importBtn").addEventListener("click", () => {
+  document.getElementById("importFile").click();
+});
+
+document.getElementById("importFile").addEventListener("change", async (e) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+  try {
+    const data = JSON.parse(await file.text());
+    const incoming = data.state || data;
+    state = {
+      checked: { ...defaultState.checked, ...(incoming.checked || {}) },
+      notes: { ...defaultState.notes, ...(incoming.notes || {}) },
+      open: { ...defaultState.open, ...(incoming.open || {}) },
+      updatedAt: new Date().toISOString()
+    };
+    saveState();
+    render();
+  } catch {
+    alert("Could not import this file. Please choose a valid NexusRAG progress JSON export.");
+  } finally {
+    e.target.value = "";
+  }
+});
+
+document.getElementById("resetBtn").addEventListener("click", () => {
+  const ok = confirm("Reset all NexusRAG progress and notes to the original dashboard state?");
+  if (!ok) return;
+  state = structuredClone(defaultState);
+  saveState();
+  render();
+});
+
+render();
+</script>
+</body>
+</html>
