@@ -45,6 +45,7 @@ data/semantic_verification/
 data/hybrid_verification/
 data/grounded_rag_verification/
 data/vector_store/
+data/evaluation_verification/
 
 # ChromaDB generated files
 chroma.sqlite3
