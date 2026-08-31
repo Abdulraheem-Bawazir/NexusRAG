@@ -2,6 +2,7 @@ from pathlib import Path
 
 from app.models.chunk import Chunk
 from app.models.document import Document
+from app.models.hybrid_retrieval_result import HybridRetrievalResult
 from app.models.rag_answer import RAGAnswer
 from app.rag.chunking import DocumentChunker
 from app.rag.embeddings import (
@@ -23,7 +24,7 @@ from app.rag.vector_store import ChromaVectorStore
 
 
 class NexusRAGEngine:
-    """Application service coordinating ingestion, retrieval, and generation."""
+    """Coordinate ingestion, retrieval, and grounded generation."""
 
     def __init__(
         self,
@@ -56,14 +57,14 @@ class NexusRAGEngine:
             chunks=list(self._chunks.values())
         )
 
-        hybrid_retriever = HybridRetriever(
+        self.hybrid_retriever = HybridRetriever(
             semantic_retriever=semantic_retriever,
             keyword_retriever=keyword_retriever,
             reranker=NoOpReranker(),
         )
 
         self.rag_service = GroundedRAGService(
-            retriever=hybrid_retriever,
+            retriever=self.hybrid_retriever,
             llm_provider=self.llm_provider,
         )
 
@@ -71,7 +72,7 @@ class NexusRAGEngine:
         self,
         path: str | Path,
     ) -> list[Document]:
-        """Parse, chunk, embed, and index one uploaded file."""
+        """Parse, chunk, embed, and index one file."""
 
         documents = load_document(path)
 
@@ -95,10 +96,14 @@ class NexusRAGEngine:
         )
 
         for document in documents:
-            self._documents[document.id] = document
+            self._documents[
+                document.id
+            ] = document
 
         for chunk in chunks:
-            self._chunks[chunk.id] = chunk
+            self._chunks[
+                chunk.id
+            ] = chunk
 
         self._refresh_retrieval()
 
@@ -107,7 +112,7 @@ class NexusRAGEngine:
     def list_documents(
         self,
     ) -> list[Document]:
-        """Return documents indexed during this application process."""
+        """Return documents known to this process."""
 
         return list(
             self._documents.values()
@@ -139,12 +144,35 @@ class NexusRAGEngine:
         self._chunks = {
             chunk_id: chunk
             for chunk_id, chunk in self._chunks.items()
-            if chunk.document_id != document_id
+            if chunk.document_id
+            != document_id
         }
 
         self._refresh_retrieval()
 
         return True
+
+    def search(
+        self,
+        query: str,
+        top_k: int = 5,
+        max_distance: float | None = None,
+        min_keyword_score: float | None = None,
+        document_id: str | None = None,
+        source: str | None = None,
+        file_type: str | None = None,
+    ) -> list[HybridRetrievalResult]:
+        """Search indexed evidence without invoking the LLM."""
+
+        return self.hybrid_retriever.retrieve(
+            query=query,
+            top_k=top_k,
+            max_distance=max_distance,
+            min_keyword_score=min_keyword_score,
+            document_id=document_id,
+            source=source,
+            file_type=file_type,
+        )
 
     def ask(
         self,

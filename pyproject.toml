@@ -13,6 +13,7 @@ dependencies = [
     "chromadb",
     "fastapi",
     "httpx",
+    "mcp[cli]>=2,<3",
     "pypdf",
     "python-docx",
     "python-multipart",
