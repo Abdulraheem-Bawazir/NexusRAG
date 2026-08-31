@@ -44,6 +44,7 @@ data/processed/*
 data/semantic_verification/
 data/hybrid_verification/
 data/grounded_rag_verification/
+data/vector_store/
 
 # ChromaDB generated files
 chroma.sqlite3
