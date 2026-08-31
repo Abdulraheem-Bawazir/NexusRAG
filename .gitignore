@@ -43,6 +43,7 @@ data/processed/*
 # Local vector databases / generated RAG data
 data/semantic_verification/
 data/hybrid_verification/
+data/grounded_rag_verification/
 
 # ChromaDB generated files
 chroma.sqlite3
