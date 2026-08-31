@@ -46,7 +46,7 @@ UploadFileDependency = Annotated[
 def document_to_response(
     document: Document,
 ) -> DocumentResponse:
-    """Convert an internal document model into an API response."""
+    """Convert an internal document into an API response."""
 
     return DocumentResponse(
         id=document.id,
@@ -54,6 +54,21 @@ def document_to_response(
         file_type=document.file_type,
         metadata=document.metadata,
     )
+
+
+def source_group_key(
+    document: Document,
+) -> str:
+    """Return one stable key for all pages of a source file."""
+
+    source_id = document.metadata.get(
+        "source_id"
+    )
+
+    if source_id is not None:
+        return str(source_id)
+
+    return document.id
 
 
 @router.post(
@@ -85,19 +100,6 @@ async def upload_document(
             detail="Unsupported document type.",
         )
 
-    UPLOAD_DIR.mkdir(
-        parents=True,
-        exist_ok=True,
-    )
-
-    destination = UPLOAD_DIR / filename
-
-    if destination.exists():
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="A file with this name already exists.",
-        )
-
     content = await file.read()
 
     if not content:
@@ -106,7 +108,16 @@ async def upload_document(
             detail="Uploaded file cannot be empty.",
         )
 
-    destination.write_bytes(content)
+    UPLOAD_DIR.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    destination = UPLOAD_DIR / filename
+
+    destination.write_bytes(
+        content
+    )
 
     try:
         documents = engine.ingest_path(
@@ -122,10 +133,30 @@ async def upload_document(
             detail=str(exc),
         ) from exc
 
+    displayed_documents: list[Document] = []
+    seen_sources: set[str] = set()
+
+    for document in documents:
+        group_key = source_group_key(
+            document
+        )
+
+        if group_key in seen_sources:
+            continue
+
+        seen_sources.add(
+            group_key
+        )
+
+        displayed_documents.append(
+            document
+        )
+
     return DocumentUploadResponse(
         documents=[
             document_to_response(document)
-            for document in documents
+            for document
+            in displayed_documents
         ]
     )
 
@@ -137,12 +168,30 @@ async def upload_document(
 def list_documents(
     engine: EngineDependency,
 ) -> list[DocumentResponse]:
-    """List documents indexed during the current application process."""
+    """List uploaded source files instead of individual PDF pages."""
 
-    return [
-        document_to_response(document)
-        for document in engine.list_documents()
-    ]
+    responses: list[DocumentResponse] = []
+    seen_sources: set[str] = set()
+
+    for document in engine.list_documents():
+        group_key = source_group_key(
+            document
+        )
+
+        if group_key in seen_sources:
+            continue
+
+        seen_sources.add(
+            group_key
+        )
+
+        responses.append(
+            document_to_response(
+                document
+            )
+        )
+
+    return responses
 
 
 @router.delete(
@@ -153,7 +202,7 @@ def delete_document(
     document_id: str,
     engine: EngineDependency,
 ) -> Response:
-    """Delete one indexed document."""
+    """Delete one uploaded source and all its page documents."""
 
     deleted = engine.delete_document(
         document_id

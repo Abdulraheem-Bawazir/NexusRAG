@@ -112,7 +112,7 @@ class NexusRAGEngine:
     def list_documents(
         self,
     ) -> list[Document]:
-        """Return documents known to this process."""
+        """Return internal page-aware documents."""
 
         return list(
             self._documents.values()
@@ -122,30 +122,55 @@ class NexusRAGEngine:
         self,
         document_id: str,
     ) -> bool:
-        """Delete one document and its indexed chunks."""
+        """Delete a document or all pages belonging to its source."""
 
         if not document_id.strip():
             raise ValueError(
                 "document_id cannot be empty."
             )
 
-        document = self._documents.pop(
-            document_id,
-            None,
-        )
-
-        if document is None:
-            return False
-
-        self.vector_store.delete_document(
+        target = self._documents.get(
             document_id
         )
 
+        if target is None:
+            return False
+
+        source_id = target.metadata.get(
+            "source_id"
+        )
+
+        if source_id is None:
+            document_ids = {
+                document_id
+            }
+        else:
+            document_ids = {
+                document.id
+                for document
+                in self._documents.values()
+                if document.metadata.get(
+                    "source_id"
+                )
+                == source_id
+            }
+
+        for current_id in document_ids:
+            self.vector_store.delete_document(
+                current_id
+            )
+
+            self._documents.pop(
+                current_id,
+                None,
+            )
+
         self._chunks = {
             chunk_id: chunk
-            for chunk_id, chunk in self._chunks.items()
+            for chunk_id, chunk
+            in self._chunks.items()
             if chunk.document_id
-            != document_id
+            not in document_ids
         }
 
         self._refresh_retrieval()

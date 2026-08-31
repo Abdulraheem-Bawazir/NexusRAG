@@ -2,130 +2,305 @@
 
 > A production-style, local-first Retrieval-Augmented Generation system for private document knowledge bases.
 
-NexusRAG is an AI engineering portfolio project focused on building the core components of a modern Retrieval-Augmented Generation (RAG) system from the ground up.
+NexusRAG is an AI engineering portfolio project that implements the major components of a modern RAG system explicitly rather than hiding the pipeline behind a high-level framework.
 
-Rather than hiding the pipeline behind a high-level RAG framework, NexusRAG implements the major components explicitly so they remain understandable, testable, replaceable, and measurable.
+It supports private PDF, DOCX, and TXT knowledge bases, local embeddings, persistent vector storage, semantic and lexical retrieval, hybrid ranking, grounded local LLM generation, traceable citations, evaluation, REST APIs, MCP tools, Docker, CI, observability, and a user-facing web interface.
 
-The project currently includes document ingestion, metadata-aware chunking, local embeddings, persistent vector storage, semantic retrieval, BM25 keyword search, hybrid retrieval, filtering, thresholds, and a pluggable reranking layer.
+The project is designed to demonstrate practical AI engineering across the entire lifecycle:
 
-The next major stage is grounded LLM answer generation with traceable citations.
+```text
+Documents
+   ->
+Ingestion
+   ->
+Chunking
+   ->
+Embeddings
+   ->
+Vector Storage
+   ->
+Hybrid Retrieval
+   ->
+Grounded Generation
+   ->
+Citations
+   ->
+Evaluation
+   ->
+API / MCP / Web UI
+   ->
+Docker / CI
+```
 
 ---
 
 ## Current Status
 
-### Phase 5 - Retrieval Engine
+NexusRAG is functionally complete as a local-first RAG application.
 
-**Status: Complete**
-
-Current verification:
+Verified project status:
 
 ```text
-pytest: 117 passed
-ruff:   All checks passed
+Python tests:      179 passed
+Ruff:              All checks passed
+Local LLM:         Qwen3 4B through Ollama
+Embedding model:   sentence-transformers/all-MiniLM-L6-v2
+Vector store:      ChromaDB
+Lexical search:    BM25
+Hybrid fusion:     Reciprocal Rank Fusion
+API:               FastAPI
+MCP:               MCP Python SDK 2.x
+Containerization:  Docker + Docker Compose
+CI:                GitHub Actions
 ```
 
-The retrieval system currently supports:
+A real retrieval verification set currently contains four queries.
 
-- semantic vector retrieval
-- BM25 keyword retrieval
-- Reciprocal Rank Fusion (RRF)
-- configurable `top_k`
-- semantic distance thresholds
-- keyword score thresholds
-- document filtering
-- source filtering
-- file-type filtering
-- deterministic result ordering
-- optional reranking abstraction
-- persistent ChromaDB storage
-- real semantic retrieval verification
-- real hybrid retrieval verification
-
-No answer-generation accuracy percentage is claimed because the LLM generation and formal RAG evaluation stages have not yet been completed.
-
----
-
-## Current RAG Pipeline
+Measured results on that verification set:
 
 ```text
-PDF / DOCX / TXT
-        |
-        v
-Document Ingestion
-        |
-        v
-Normalized Document
-        |
-        v
-Chunking
-        |
-        v
-Chunk Objects
-        |
-        +--------------------------+
-        |                          |
-        v                          v
-Local Embeddings               BM25 Index
-        |                          |
-        v                          |
-Persistent ChromaDB                |
-        |                          |
-        v                          |
-Semantic Retrieval                 |
-        |                          |
-        +------------+-------------+
-                     |
-                     v
-             Reciprocal Rank
-                Fusion (RRF)
-                     |
-                     v
-             Optional Reranker
-                     |
-                     v
-              Ranked Context
-                     |
-                     v
-             LLM Generation
-                [NEXT]
-                     |
-                     v
-           Answer + Citations
-                [PLANNED]
+Evaluation cases: 4
+Hit Rate@3:       1.0
+Recall@3:         1.0
+MRR:              1.0
+```
+
+These numbers describe only the current four-query verification set. They are not presented as overall system accuracy.
+
+---
+
+# Demo
+
+The application provides a dark red / black user interface for private-document question answering.
+
+Typical workflow:
+
+```text
+Upload document
+      |
+      v
+Document indexed
+      |
+      v
+Ask a question
+      |
+      v
+Hybrid retrieval
+      |
+      v
+Grounded local LLM answer
+      |
+      v
+Source + page citation
+```
+
+Example verified behavior:
+
+```text
+Question:
+What are the listed skills?
+
+Answer:
+Retrieved from the uploaded CV.
+
+Citation:
+Abdulraheem Bawazir CV.pdf
+page 1
+```
+
+## Screenshots
+
+### NexusRAG Interface
+
+![NexusRAG Home](docs/screenshots/01-nexusrag-home.png)
+
+### Document Upload
+
+![Document Upload](docs/screenshots/02-document-upload.png)
+
+### Grounded Answer
+
+![Grounded Answer](docs/screenshots/03-grounded-answer.png)
+
+### Traceable Citation
+
+![Source Citation](docs/screenshots/04-source-citation.png)
+
+### FastAPI / Swagger
+
+![FastAPI Swagger](docs/screenshots/05-fastapi-swagger.png)
+
+### Docker Deployment
+
+![Docker Running](docs/screenshots/06-docker-running.png)
+
+---
+
+# Why NexusRAG?
+
+Many introductory RAG projects reduce the architecture to something like:
+
+```python
+rag = Framework(...)
+rag.chat("question")
+```
+
+That is useful for rapid prototyping, but it hides many of the engineering decisions that determine whether a RAG application is reliable.
+
+NexusRAG instead exposes the core components individually.
+
+```text
+documents
+    |
+    v
+normalized documents
+    |
+    v
+chunks
+    |
+    v
+embeddings
+    |
+    v
+vector index
+    |
+    +----------------------+
+    |                      |
+    v                      v
+semantic search         BM25
+    |                      |
+    +----------+-----------+
+               |
+               v
+       reciprocal rank fusion
+               |
+               v
+          reranking layer
+               |
+               v
+        retrieved evidence
+               |
+               v
+        grounded local LLM
+               |
+               v
+        answer + citations
+```
+
+This makes the following engineering decisions visible and testable:
+
+- document parsing
+- chunk boundaries
+- metadata propagation
+- deterministic chunk identity
+- embedding provider selection
+- vector-store persistence
+- semantic similarity
+- keyword retrieval
+- retrieval fusion
+- thresholds and filters
+- context construction
+- grounded prompting
+- structured LLM output
+- citation validation
+- unsupported-question behavior
+- retrieval evaluation
+- API design
+- MCP integration
+- containerization
+- CI
+- observability
+
+---
+
+# High-Level Architecture
+
+```text
+                     NexusRAG
+
+                 User Documents
+             PDF / DOCX / TXT
+                       |
+                       v
+              Document Ingestion
+                       |
+                       v
+              Normalized Document
+                       |
+                       v
+                    Chunking
+                       |
+                       v
+                  Chunk Objects
+                       |
+           +-----------+-----------+
+           |                       |
+           v                       v
+   MiniLM Embeddings          BM25 Corpus
+           |                       |
+           v                       |
+        ChromaDB                    |
+           |                       |
+           v                       |
+   Semantic Retrieval              |
+           |                       |
+           +-----------+-----------+
+                       |
+                       v
+          Reciprocal Rank Fusion
+                       |
+                       v
+              Reranker Interface
+                       |
+                       v
+              Retrieved Evidence
+                       |
+                       v
+               Context Builder
+                       |
+                       v
+              Grounded Prompt
+                       |
+                       v
+              Qwen3 via Ollama
+                       |
+                       v
+            Structured JSON Output
+                       |
+                       v
+              Citation Validation
+                       |
+                       v
+              Grounded RAG Answer
+                       |
+          +------------+-------------+
+          |            |             |
+          v            v             v
+       FastAPI         MCP         Web UI
+          |
+          v
+        Docker
+```
+
+For more detail, see:
+
+```text
+docs/ARCHITECTURE.md
 ```
 
 ---
 
-# Implemented Phases
+# Document Ingestion
 
-## Phase 1 - Foundation
+NexusRAG supports:
 
-The initial project engineering foundation includes:
+```text
+PDF
+DOCX
+TXT
+```
 
-- Python 3.11+
-- structured Python package layout
-- virtual environment workflow
-- `pyproject.toml`
-- application configuration
-- logging configuration
-- pytest infrastructure
-- Ruff linting
-- Git and GitHub repository workflow
-
----
-
-## Phase 2 - Document Ingestion
-
-NexusRAG supports three source formats:
-
-- TXT
-- DOCX
-- PDF
-
-All file types are converted into a normalized internal `Document` representation.
-
-### Normalized Document Model
+All formats are converted into a common internal `Document` representation.
 
 Conceptually:
 
@@ -143,17 +318,9 @@ Document(
 )
 ```
 
-The model validates:
+## TXT
 
-- document IDs
-- document text
-- source names
-- supported file types
-- normalized file-type values
-
-### TXT Loading
-
-TXT files are decoded using UTF-8 with BOM support.
+TXT files support UTF-8 and UTF-8 BOM handling.
 
 ```text
 example.txt
@@ -165,27 +332,17 @@ TXT Loader
 Document
 ```
 
-### DOCX Loading
+## DOCX
 
-DOCX files are parsed using `python-docx`.
+DOCX parsing uses `python-docx`.
 
-Empty paragraphs are removed while meaningful text boundaries are preserved.
+Meaningful text is extracted while empty paragraphs are ignored.
 
-```text
-example.docx
-     |
-     v
-DOCX Loader
-     |
-     v
-Document
-```
+## PDF
 
-### PDF Loading
+PDF parsing uses `pypdf`.
 
-PDF files are parsed using `pypdf`.
-
-Instead of merging an entire PDF into a single text block, NexusRAG creates normalized page-aware document objects for non-empty pages.
+PDF content remains page-aware so page information can survive the entire RAG pipeline.
 
 ```text
 handbook.pdf
@@ -196,21 +353,20 @@ handbook.pdf
      +-- ...
 ```
 
-This allows page metadata to survive later retrieval stages and eventually support citations such as:
+This enables citations such as:
 
 ```text
-handbook.pdf, page 14
+handbook.pdf
+page 14
 ```
 
 Scanned image-only PDFs are not currently processed with OCR.
 
 ---
 
-## Unified Document Loading
+# Unified Loader
 
-Downstream RAG components do not need to know how each file format is parsed.
-
-NexusRAG exposes a unified loader:
+NexusRAG exposes a common loader interface:
 
 ```python
 from app.rag.loaders.document_loader import load_document
@@ -218,7 +374,7 @@ from app.rag.loaders.document_loader import load_document
 documents = load_document("data/raw/example.pdf")
 ```
 
-The common output is:
+Output:
 
 ```python
 list[Document]
@@ -234,321 +390,197 @@ PDF  ----/
 
 ---
 
-## Phase 3 - Chunking & Metadata Pipeline
+# Chunking
 
-Phase 3 transforms normalized documents into retrieval-ready chunks.
+Documents are transformed into retrieval-ready chunks.
 
-### Implemented
+Implemented functionality includes:
 
-- `Chunk` data model
-- configurable character-based chunk size
-- configurable chunk overlap
-- deterministic SHA-256 chunk IDs
+- configurable character chunk size
+- configurable overlap
+- deterministic chunk IDs
 - sequential chunk indexes
-- `Document -> Chunk` conversion
-- source preservation
-- file-type preservation
-- metadata preservation
+- source propagation
+- file-type propagation
+- metadata propagation
 - deep-copy metadata isolation
-- empty-text handling
-- chunk-boundary edge-case handling
-- package-level chunking API
+- edge-case validation
 
-### Chunking Flow
-
-```text
-Document
-    |
-    v
-TextChunker
-    |
-    v
-Overlapping Text Segments
-    |
-    v
-Deterministic Chunk IDs
-    |
-    v
-Chunk Objects
-    |
-    v
-Retrieval-Ready Data
-```
-
-Chunk IDs are deterministic.
-
-The same:
+Chunk identity is derived deterministically from:
 
 ```text
 document ID
-+ chunk index
-+ chunk text
++
+chunk index
++
+chunk text
 ```
 
-produces the same SHA-256-based chunk ID across repeated runs.
+using SHA-256.
 
-This supports duplicate-safe indexing in the vector database.
+This supports stable, duplicate-safe indexing.
 
 ---
 
-## Phase 4 - Embeddings & Vector Store
+# Embeddings
 
-Phase 4 adds semantic vector representation and persistent local vector storage.
+NexusRAG uses a replaceable embedding-provider abstraction.
 
-### Embedding Architecture
-
-NexusRAG defines an `EmbeddingProvider` interface rather than coupling the system directly to one model implementation.
-
-Current local implementation:
+Current implementation:
 
 ```text
 sentence-transformers/all-MiniLM-L6-v2
 ```
 
-Properties:
+Verified embedding dimension:
 
 ```text
-Embedding dimension: 384
-Execution: local
-Paid API required: no
+384
 ```
 
-### Embedding Pipeline
+Characteristics:
+
+```text
+Execution:        local
+Paid API:         not required
+Batch embedding:  supported
+Normalization:    supported
+```
+
+Pipeline:
 
 ```text
 Chunk
   |
   v
-Sentence Transformer
+MiniLM
   |
   v
-384-dimensional normalized vector
+384-dimensional vector
   |
   v
 EmbeddedChunk
 ```
 
-The embedding layer supports:
+---
 
-- single-text embeddings
-- batch embeddings
-- dimension validation
-- provider abstraction
-- local Sentence Transformers inference
+# Vector Storage
 
-### Vector Store
+NexusRAG currently uses ChromaDB for persistent local vector storage.
 
-NexusRAG currently uses:
+Implemented operations include:
 
-```text
-ChromaDB
-```
-
-with persistent local storage.
-
-Implemented vector-store operations include:
-
-- upsert chunks
+- upsert
+- similarity query
 - persistent collections
-- vector similarity search
-- count indexed chunks
-- delete chunks by ID
-- delete all chunks belonging to one document
-- clear a collection
-- metadata preservation
-- source preservation
+- chunk deletion
+- document-level deletion
+- collection clearing
+- metadata filtering
 - duplicate-safe re-indexing
-- metadata filters
-
-Because chunk IDs are deterministic and Chroma uses `upsert`, re-indexing identical chunks does not create unnecessary duplicate records.
+- source preservation
+- metadata preservation
 
 ---
 
-## Real Semantic Retrieval Verification
+# Semantic Retrieval
 
-A real local semantic retrieval test was performed using:
+The semantic retriever performs:
 
 ```text
-Question:
+question
+   |
+   v
+query embedding
+   |
+   v
+Chroma similarity search
+   |
+   v
+distance filtering
+   |
+   v
+typed retrieval results
+```
+
+Supported controls include:
+
+- `top_k`
+- maximum semantic distance
+- document filter
+- source filter
+- file-type filter
+
+A real verification query:
+
+```text
 Can employees work from home?
 ```
 
-The highest-ranked result was:
+successfully retrieves evidence containing:
 
 ```text
-Source:
-remote_work_policy.txt
-
-Text:
-Employees may work remotely up to three days per week.
-Remote work must be approved by the employee's manager.
+Employees may work remotely...
 ```
 
-This verifies semantic matching between:
-
-```text
-"work from home"
-```
-
-and:
-
-```text
-"work remotely"
-```
-
-even though the wording is different.
-
-The verification runs locally using MiniLM embeddings and ChromaDB.
+despite the wording being different.
 
 ---
 
-## Phase 5 - Retrieval Engine
+# BM25 Keyword Retrieval
 
-Phase 5 converts the low-level vector-search functionality into a full retrieval subsystem.
-
-### Semantic Retrieval
-
-The `SemanticRetriever` handles:
-
-- query validation
-- query embeddings
-- top-k retrieval
-- Chroma vector search
-- typed retrieval results
-- distance thresholds
-- metadata filters
-
-Example conceptually:
-
-```python
-results = semantic_retriever.retrieve(
-    query="Can employees work from home?",
-    top_k=5,
-)
-```
-
-### Distance Thresholds
-
-Vector databases will usually return the nearest result even when that result is weak.
-
-NexusRAG therefore supports configurable distance thresholds.
-
-```text
-Query
-  |
-  v
-Semantic Retrieval
-  |
-  v
-Distance Check
-  |
-  +-- strong enough --> keep
-  |
-  +-- too weak ------> reject
-```
-
-This will later help prevent unsupported LLM answers.
-
-### Metadata Filtering
-
-Semantic retrieval can be restricted using:
-
-- `document_id`
-- `source`
-- `file_type`
-
-Example:
-
-```python
-results = semantic_retriever.retrieve(
-    query="What is the policy?",
-    document_id="doc-001",
-)
-```
-
----
-
-## BM25 Keyword Retrieval
-
-Semantic search is useful when wording differs.
-
-Keyword retrieval is useful for:
-
-- exact terms
-- product names
-- policy identifiers
-- error codes
-- acronyms
-- technical terminology
-
-NexusRAG uses:
+NexusRAG also includes BM25 lexical retrieval using:
 
 ```text
 rank-bm25
 ```
 
-with BM25Okapi.
+Keyword retrieval is useful for:
 
-Example:
+- IDs
+- error codes
+- policy codes
+- acronyms
+- technical terminology
+- exact names
+
+For example:
 
 ```text
 TRV-8842
 ```
 
-can be retrieved directly through lexical matching even if semantic similarity alone is less reliable.
+can be matched directly through BM25.
 
 ---
 
-## Hybrid Retrieval
+# Hybrid Retrieval
 
-NexusRAG combines semantic retrieval and BM25 retrieval.
+Semantic and lexical retrieval are combined using Reciprocal Rank Fusion.
 
 ```text
-Semantic Retriever
-        |
-        |
-        +---------+
-                  |
-                  v
+Semantic Search
+       |
+       +---------+
+                 |
+                 v
                 RRF
-                  ^
-                  |
-        +---------+
-        |
-BM25 Retriever
+                 ^
+                 |
+       +---------+
+       |
+      BM25
 ```
 
-The system uses **Reciprocal Rank Fusion (RRF)**.
+Raw Chroma distance and BM25 scores are not directly added because they exist on different numerical scales.
 
-RRF is used instead of directly combining raw scores because:
-
-```text
-Chroma distance
-```
-
-and:
-
-```text
-BM25 score
-```
-
-are on different numerical scales and are not directly comparable.
-
-RRF operates on ranking positions instead.
-
-A chunk appearing highly in both systems receives a stronger fused score.
+RRF instead combines ranking positions.
 
 ---
 
-## Reranking Architecture
+# Reranking
 
-NexusRAG includes a pluggable:
-
-```text
-Reranker
-```
-
-protocol.
+NexusRAG includes a pluggable reranker interface.
 
 Current implementation:
 
@@ -556,61 +588,316 @@ Current implementation:
 NoOpReranker
 ```
 
-The current implementation preserves the existing hybrid ranking.
+This preserves the hybrid ranking while keeping the architecture ready for a learned local cross-encoder later.
 
-This abstraction allows a stronger local reranker, such as a cross-encoder, to be added later without redesigning the retrieval system.
-
-A learned cross-encoder reranker has **not** yet been implemented, so the project does not claim that capability.
+A learned reranker is not currently claimed as an implemented capability.
 
 ---
 
-## Real Hybrid Retrieval Verification
+# Grounded Generation
 
-The full retrieval pipeline has been tested with real local components.
-
-### Semantic Question
+Retrieved evidence is passed through:
 
 ```text
-Can employees work from home?
+Hybrid Results
+      |
+      v
+Context Builder
+      |
+      v
+Numbered Evidence Blocks
+      |
+      v
+Grounded Prompt
+      |
+      v
+Qwen3 4B
+      |
+      v
+Structured JSON
 ```
 
-Expected source:
+The current local LLM runs through Ollama:
 
 ```text
-remote_work_policy.txt
+qwen3:4b
 ```
 
-### Exact-Term Question
+NexusRAG explicitly requests structured output containing:
 
-```text
-What does policy TRV-8842 require?
+```json
+{
+  "answer": "Grounded answer",
+  "citations": [1],
+  "insufficient_evidence": false
+}
 ```
 
-Expected source:
-
-```text
-travel_policy.txt
-```
-
-The verification combines:
-
-```text
-MiniLM embeddings
-+
-ChromaDB semantic search
-+
-BM25 keyword search
-+
-Reciprocal Rank Fusion
-+
-NoOp reranking interface
-```
-
-This demonstrates both semantic and exact-term retrieval behavior.
+The application then validates the result rather than trusting arbitrary model output.
 
 ---
 
-# Current Project Structure
+# Citation Validation
+
+Citations are connected back to retrieved chunks.
+
+Each citation preserves information such as:
+
+```text
+citation index
+chunk ID
+document ID
+source
+file type
+metadata
+page number when available
+```
+
+The generation service rejects citations pointing to unavailable evidence indexes.
+
+Grounded answers must contain at least one valid citation.
+
+---
+
+# Unsupported Questions
+
+NexusRAG includes insufficient-evidence behavior.
+
+If there is not enough retrieved evidence, the system can return:
+
+```text
+I don't have enough evidence in the indexed documents to answer that question.
+```
+
+with:
+
+```text
+citations = []
+insufficient_evidence = true
+```
+
+This behavior is explicitly tested.
+
+---
+
+# Evaluation
+
+NexusRAG contains evaluation utilities for:
+
+## Retrieval
+
+- Hit Rate@K
+- Recall@K
+- Mean Reciprocal Rank
+
+## Citations
+
+- citation precision
+- citation recall
+- citation F1
+
+## Guardrails
+
+- supported answers require evidence
+- unsupported answers require insufficient-evidence behavior
+- unsupported answers should not contain citations
+
+Current real retrieval verification:
+
+```text
+Cases:       4
+Hit Rate@3:  1.0
+Recall@3:    1.0
+MRR:         1.0
+```
+
+The benchmark intentionally remains identified as a small verification set rather than a large-scale accuracy benchmark.
+
+Run it with:
+
+```bash
+python scripts/verify_retrieval_evaluation.py
+```
+
+---
+
+# FastAPI
+
+NexusRAG exposes a REST API through FastAPI.
+
+Main endpoints:
+
+```text
+GET     /health
+
+POST    /api/v1/documents
+GET     /api/v1/documents
+DELETE  /api/v1/documents/{document_id}
+
+POST    /api/v1/query
+```
+
+Swagger documentation:
+
+```text
+http://localhost:8000/docs
+```
+
+OpenAPI schema:
+
+```text
+http://localhost:8000/openapi.json
+```
+
+---
+
+# MCP
+
+NexusRAG exposes private-document capabilities through the Model Context Protocol using the MCP Python SDK 2.x.
+
+Implemented MCP tools:
+
+```text
+list_documents
+search_documents
+ask_documents
+```
+
+Run the stdio MCP server:
+
+```bash
+python -m app.mcp.server
+```
+
+The process waits for an MCP client over standard input/output.
+
+---
+
+# Web Interface
+
+NexusRAG includes a user-facing interface served directly by FastAPI.
+
+Features:
+
+- red / black visual theme
+- system health indicator
+- PDF upload
+- DOCX upload
+- TXT upload
+- indexed-document list
+- document deletion
+- grounded question answering
+- source citations
+- page-number display
+- API documentation link
+
+Run locally:
+
+```bash
+python -m uvicorn app.main:app --reload
+```
+
+Then open:
+
+```text
+http://127.0.0.1:8000
+```
+
+---
+
+# Docker
+
+NexusRAG is containerized using Docker.
+
+Build:
+
+```bash
+docker build -t nexusrag:local .
+```
+
+Run with Docker Compose:
+
+```bash
+docker compose up --build -d
+```
+
+Verify:
+
+```bash
+docker compose ps
+```
+
+Health endpoint:
+
+```text
+http://localhost:8000/health
+```
+
+Web interface:
+
+```text
+http://localhost:8000
+```
+
+Stop:
+
+```bash
+docker compose down
+```
+
+The Docker configuration connects to Ollama running on the host through:
+
+```text
+host.docker.internal
+```
+
+---
+
+# Observability
+
+The API includes request logging and request IDs.
+
+Every response receives:
+
+```text
+X-Request-ID
+```
+
+If a client supplies an existing request ID, NexusRAG preserves it.
+
+Request logs contain information such as:
+
+```text
+request ID
+HTTP method
+path
+status
+duration
+```
+
+---
+
+# Continuous Integration
+
+GitHub Actions runs automated quality checks on pushes and pull requests.
+
+CI verifies:
+
+```text
+Ruff
+pytest
+Docker image build
+```
+
+Workflow:
+
+```text
+.github/workflows/ci.yml
+```
+
+---
+
+# Project Structure
 
 ```text
 NexusRAG/
@@ -618,73 +905,67 @@ NexusRAG/
 +-- app/
 |   |
 |   +-- api/
+|   |   +-- app.py
+|   |   +-- dependencies.py
+|   |   +-- middleware.py
+|   |   +-- routes.py
+|   |   +-- schemas.py
 |   |
 |   +-- core/
-|   |   +-- config.py
-|   |   +-- logging_config.py
+|   |
+|   +-- evaluation/
+|   |   +-- citation_metrics.py
+|   |   +-- guardrails.py
+|   |   +-- models.py
+|   |   +-- retrieval_metrics.py
+|   |
+|   +-- mcp/
+|   |   +-- server.py
+|   |   +-- tools.py
 |   |
 |   +-- models/
-|   |   +-- chunk.py
-|   |   +-- document.py
-|   |   +-- embedded_chunk.py
-|   |   +-- hybrid_retrieval_result.py
-|   |   +-- keyword_retrieval_result.py
-|   |   +-- retrieval_result.py
 |   |
 |   +-- rag/
-|       |
-|       +-- chunking/
-|       |   +-- chunk_id.py
-|       |   +-- document_chunker.py
-|       |   +-- text_chunker.py
-|       |
-|       +-- embeddings/
-|       |   +-- base.py
-|       |   +-- chunk_embedder.py
-|       |   +-- sentence_transformer.py
-|       |
-|       +-- loaders/
-|       |   +-- document_loader.py
-|       |   +-- docx_loader.py
-|       |   +-- pdf_loader.py
-|       |   +-- txt_loader.py
-|       |
-|       +-- retrieval/
-|       |   +-- hybrid_retriever.py
-|       |   +-- keyword_retriever.py
-|       |   +-- reranker.py
-|       |   +-- semantic_retriever.py
-|       |
-|       +-- vector_store/
-|           +-- chroma_store.py
+|   |   +-- chunking/
+|   |   +-- embeddings/
+|   |   +-- generation/
+|   |   +-- loaders/
+|   |   +-- retrieval/
+|   |   +-- vector_store/
+|   |
+|   +-- services/
+|   |   +-- nexusrag_engine.py
+|   |
+|   +-- web/
+|       +-- app.js
+|       +-- index.html
+|       +-- styles.css
 |
 +-- data/
-|   +-- raw/
-|   +-- processed/
-|
-+-- scripts/
-|   +-- verify_embeddings.py
-|   +-- verify_hybrid_retrieval.py
-|   +-- verify_semantic_retrieval.py
-|
-+-- tests/
-|   +-- models/
-|   +-- rag/
-|       +-- chunking/
-|       +-- embeddings/
-|       +-- loaders/
-|       +-- retrieval/
-|       +-- vector_store/
 |
 +-- docs/
-|   +-- nexusrag_roadmap.html
+|   +-- screenshots/
+|   +-- ARCHITECTURE.md
+|   +-- CASE_STUDY.md
+|   +-- DEMO.md
 |
++-- scripts/
+|
++-- tests/
+|   +-- api/
+|   +-- evaluation/
+|   +-- mcp/
+|   +-- models/
+|   +-- rag/
+|
++-- .dockerignore
++-- .env.example
 +-- .gitignore
++-- docker-compose.yml
++-- Dockerfile
 +-- pyproject.toml
 +-- README.md
 ```
-
-The architecture will continue evolving as answer generation, citations, APIs, evaluation, and deployment are added.
 
 ---
 
@@ -694,8 +975,10 @@ The architecture will continue evolving as answer generation, citations, APIs, e
 
 - Python 3.11+
 - Git
+- Ollama
+- Docker Desktop for containerized execution
 
-Clone the repository:
+Clone:
 
 ```bash
 git clone <repository-url>
@@ -708,13 +991,13 @@ Create a virtual environment:
 python -m venv .venv
 ```
 
-Activate it on Windows:
+Windows:
 
 ```powershell
 .\.venv\Scripts\Activate.ps1
 ```
 
-Install NexusRAG with development dependencies:
+Install:
 
 ```bash
 python -m pip install -e ".[dev]"
@@ -722,77 +1005,59 @@ python -m pip install -e ".[dev]"
 
 ---
 
-# Current Technology Stack
+# Local LLM Setup
 
-## Runtime
+Install Ollama and pull the model:
 
-```text
-Python
-pypdf
-python-docx
-sentence-transformers
-ChromaDB
-rank-bm25
+```bash
+ollama pull qwen3:4b
 ```
 
-## Development / Testing
+Verify:
 
-```text
-pytest
-Ruff
-ReportLab
-Git
-GitHub
+```bash
+ollama list
 ```
 
-## Current Local AI Components
+NexusRAG does not require a paid LLM API for its core local workflow.
+
+---
+
+# Run Locally
+
+```bash
+python -m uvicorn app.main:app --reload
+```
+
+Open:
 
 ```text
-Embedding model:
-sentence-transformers/all-MiniLM-L6-v2
-
-Embedding dimension:
-384
-
-Vector store:
-ChromaDB
-
-Lexical retrieval:
-BM25Okapi
-
-Hybrid fusion:
-Reciprocal Rank Fusion
+http://127.0.0.1:8000
 ```
 
 ---
 
-# Running Tests
+# Testing
 
-Run the complete test suite:
-
-```bash
-pytest
-```
-
-Verbose:
+Full test suite:
 
 ```bash
-pytest -v
+pytest -q
 ```
 
-Current verified status:
+Current verified result:
 
 ```text
-117 passed
+179 passed
 ```
 
-Run linting:
+Lint:
 
 ```bash
 python -m ruff check .
 ```
 
-Expected:
+Current verified result:
 
 ```text
 All checks passed!
@@ -802,333 +1067,201 @@ All checks passed!
 
 # Verification Scripts
 
-## Real Embeddings
-
-```bash
-python scripts/verify_embeddings.py
-```
-
-Verifies:
-
-- the real local embedding model loads
-- vector dimension is 384
-- embeddings are generated correctly
-
-## Real Semantic Retrieval
+Semantic retrieval:
 
 ```bash
 python scripts/verify_semantic_retrieval.py
 ```
 
-Verifies:
-
-```text
-"work from home"
-```
-
-retrieves the source containing:
-
-```text
-"work remotely"
-```
-
-## Real Hybrid Retrieval
+Hybrid retrieval:
 
 ```bash
 python scripts/verify_hybrid_retrieval.py
 ```
 
-Verifies both:
+Grounded generation:
 
-- semantic retrieval behavior
-- exact-term BM25 behavior
-- hybrid RRF ranking
+```bash
+python scripts/verify_grounded_rag.py
+```
+
+Retrieval evaluation:
+
+```bash
+python scripts/verify_retrieval_evaluation.py
+```
 
 ---
 
-# Configuration
+# Current Technology Stack
 
-NexusRAG includes a central application configuration layer.
-
-Current environment settings include values such as:
+## AI / Retrieval
 
 ```text
-NEXUSRAG_APP_NAME
-NEXUSRAG_ENV
-NEXUSRAG_LOG_LEVEL
+sentence-transformers
+all-MiniLM-L6-v2
+ChromaDB
+BM25
+Reciprocal Rank Fusion
+Ollama
+Qwen3 4B
 ```
 
-Filesystem paths are resolved relative to the project root instead of being hardcoded to one machine.
-
-This is important for:
-
-- local development
-- automated tests
-- Docker
-- CI
-- deployment
-
----
-
-# Logging
-
-NexusRAG uses Python's standard logging system rather than relying on scattered `print()` statements.
-
-Future production-style logging can include events such as:
+## Backend
 
 ```text
-INFO | document loaded
-INFO | chunks created
-INFO | embeddings generated
-INFO | vector index updated
-INFO | retrieval candidates returned
-INFO | hybrid ranking completed
+Python 3.11
+FastAPI
+Pydantic
+Uvicorn
 ```
 
-Observability will be expanded later in the project.
-
----
-
-# Private Document Safety
-
-Private input files are stored under:
+## Document Processing
 
 ```text
-data/raw/
-data/processed/
+pypdf
+python-docx
 ```
 
-These directories are excluded from Git except for placeholder files.
-
-Local Chroma verification databases are also excluded.
-
-Environment files and virtual environments are excluded:
+## Tooling
 
 ```text
-.env
-.venv/
+MCP Python SDK 2.x
+pytest
+Ruff
+Git
+GitHub Actions
 ```
 
-Private documents, local vector indexes, and secrets should never be committed to the public repository.
+## Production
 
----
+```text
+Docker
+Docker Compose
+healthchecks
+request IDs
+structured request logging
+```
 
-# Development Roadmap
+## Frontend
 
-## Foundation
-
-- [x] Project architecture
-- [x] Python virtual environment
-- [x] Git repository
-- [x] `pyproject.toml`
-- [x] Application configuration
-- [x] Logging
-- [x] pytest infrastructure
-- [x] Ruff linting
-
-## Document Ingestion
-
-- [x] Normalized `Document` model
-- [x] TXT loader
-- [x] PDF loader
-- [x] Page-aware PDF metadata
-- [x] DOCX loader
-- [x] Unified document loader
-- [x] Ingestion tests
-
-## Chunking
-
-- [x] `Chunk` model
-- [x] Configurable character chunking
-- [x] Chunk overlap
-- [x] Deterministic chunk IDs
-- [x] Metadata propagation
-- [x] Deep-copy metadata isolation
-- [x] Chunking tests
-
-## Embeddings and Vector Storage
-
-- [x] Embedding provider abstraction
-- [x] Local MiniLM embedding model
-- [x] Batch chunk embedding
-- [x] Embedding dimension validation
-- [x] Persistent ChromaDB storage
-- [x] Duplicate-safe upserts
-- [x] Vector similarity queries
-- [x] Document deletion
-- [x] Collection clearing
-- [x] Metadata filtering
-- [x] Persistence testing
-
-## Retrieval Engine
-
-- [x] Semantic retrieval
-- [x] Configurable top-k
-- [x] Distance thresholds
-- [x] Metadata filtering
-- [x] BM25 keyword retrieval
-- [x] Keyword score thresholds
-- [x] Reciprocal Rank Fusion
-- [x] Hybrid retrieval
-- [x] Deterministic fused ordering
-- [x] Reranker abstraction
-- [x] End-to-end semantic verification
-- [x] End-to-end hybrid verification
-
-## Grounded Generation
-
-- [ ] LLM provider abstraction
-- [ ] Grounded RAG prompt
-- [ ] Context construction
-- [ ] Context limits
-- [ ] Answer generation
-- [ ] Source citations
-- [ ] Insufficient-evidence behavior
-
-## Evaluation
-
-- [ ] Retrieval evaluation dataset
-- [ ] Recall@K / Hit Rate
-- [ ] MRR
-- [ ] Citation correctness
-- [ ] Groundedness evaluation
-- [ ] Unsupported-question testing
-- [ ] Benchmark reporting
-
-## Application Layer
-
-- [ ] FastAPI backend
-- [ ] REST endpoints
-- [ ] Document upload API
-- [ ] Query API
-- [ ] Interactive web interface
-- [ ] Source inspection UI
-- [ ] Streaming responses
-
-## AI Tooling
-
-- [ ] MCP server
-- [ ] MCP document-search tools
-
-## Production Engineering
-
-- [ ] Structured end-to-end logging
-- [ ] Request IDs
-- [ ] Latency measurement
-- [ ] Docker
-- [ ] Docker Compose
-- [ ] GitHub Actions CI
-- [ ] Deployment
-- [ ] Monitoring and observability
-
-## Portfolio Presentation
-
-- [ ] Final architecture diagram
-- [ ] Retrieval benchmarks
-- [ ] Evaluation results
-- [ ] API documentation
-- [ ] Screenshots
-- [ ] Demo video
-- [ ] Deployment documentation
-- [ ] Technical case study
-- [ ] Final release
+```text
+HTML
+CSS
+JavaScript
+FastAPI static serving
+```
 
 ---
 
 # Engineering Principles
 
-## Understand Before Abstracting
+## Local First
 
-Core RAG components are implemented explicitly before introducing higher-level frameworks.
+The core RAG workflow runs without requiring a paid external LLM API.
 
-## Replaceable Components
+## Explicit Components
 
-Embeddings, retrieval methods, rerankers, vector stores, and future LLM providers should expose stable interfaces.
+Major RAG stages remain individually understandable and testable.
 
-## Preserve Metadata
+## Stable Interfaces
 
-Source information must survive:
+Embedding, retrieval, reranking, generation, and application layers are separated through explicit interfaces.
+
+## Metadata Preservation
+
+Source identity is preserved through:
 
 ```text
 ingestion
--> chunking
--> indexing
--> retrieval
--> generation
--> citations
+->
+chunking
+->
+indexing
+->
+retrieval
+->
+generation
+->
+citation
 ```
 
-## Test Behavior
+## Ground Before Generate
 
-Tests validate expected behavior, edge cases, data integrity, and component contracts rather than only verifying that code executes.
+Retrieved evidence is constructed before generation and the model is instructed to rely only on that context.
 
-## Local-First Development
+## Validate Model Output
 
-Core RAG functionality should work without requiring paid external APIs.
+Structured generation output is parsed and validated by the application.
 
 ## Measure Before Claiming
 
-Performance and accuracy claims will only be published after controlled evaluation.
+Metrics are only reported when they have actually been measured.
 
-## Incremental Architecture
+## Test Behavior
 
-Complex abstractions are introduced only when they provide a concrete engineering benefit.
+Tests cover normal behavior, invalid inputs, failure cases, metadata integrity, retrieval behavior, API behavior, evaluation, and tool interfaces.
 
 ---
 
-# Next Phase
+# Current Limitations
 
-## Phase 6 - Grounded Answer Generation and Citations
+NexusRAG intentionally does not claim capabilities that have not been implemented or measured.
 
-The next stage will connect retrieved evidence to an LLM.
+Current limitations include:
 
-Target pipeline:
+- no OCR for scanned image-only PDFs
+- no learned cross-encoder reranker yet
+- retrieval evaluation set is currently small
+- no large-scale answer-quality benchmark yet
+- local inference speed depends on available hardware
+- indexed in-process document registry is not currently a full external metadata database
+
+These are possible future extensions rather than hidden limitations.
+
+---
+
+# Documentation
+
+Architecture:
 
 ```text
-User Question
-      |
-      v
-Hybrid Retrieval
-      |
-      v
-Top Evidence
-      |
-      v
-Context Builder
-      |
-      v
-Grounded Prompt
-      |
-      v
-LLM
-      |
-      v
-Answer
-      |
-      v
-Traceable Citations
+docs/ARCHITECTURE.md
 ```
 
-The LLM will be instructed to answer only from retrieved evidence and to return an insufficient-evidence response when the indexed documents do not support an answer.
+Engineering case study:
+
+```text
+docs/CASE_STUDY.md
+```
+
+Demo guide:
+
+```text
+docs/DEMO.md
+```
 
 ---
 
 # Project Goal
 
-The final NexusRAG system will allow users to:
+NexusRAG was built to demonstrate the engineering required to create a serious RAG application rather than only connecting an LLM to a vector database.
 
-1. upload private documents
-2. parse and normalize those documents
-3. split them into retrieval-ready chunks
-4. create local embeddings
-5. persist vectors locally
-6. perform semantic and keyword retrieval
-7. combine results using hybrid retrieval
-8. optionally rerank retrieved evidence
-9. generate grounded answers
-10. inspect traceable citations
-11. evaluate retrieval and answer quality
-12. interact through an API and web interface
-13. deploy the system reproducibly
+The project covers:
 
-NexusRAG is being built as a serious AI engineering portfolio project with emphasis on retrieval systems, software architecture, testing, evaluation, APIs, deployment, and production engineering rather than only model usage.
+```text
+AI engineering
+retrieval systems
+software architecture
+local LLM integration
+evaluation
+APIs
+MCP
+testing
+containerization
+CI
+observability
+frontend integration
+```
+
+The result is a local-first private-document knowledge assistant that can ingest documents, retrieve relevant evidence, generate grounded answers, and return traceable citations through both programmatic and user-facing interfaces.
