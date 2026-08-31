@@ -10,14 +10,17 @@ def make_embedded_chunk(
     chunk_index: int,
     text: str,
     vector: tuple[float, ...],
+    document_id: str = "doc-001",
+    source: str = "example.pdf",
+    file_type: str = "pdf",
 ) -> EmbeddedChunk:
     chunk = Chunk(
         id=chunk_id,
-        document_id="doc-001",
+        document_id=document_id,
         text=text,
         chunk_index=chunk_index,
-        source="example.pdf",
-        file_type="pdf",
+        source=source,
+        file_type=file_type,
         metadata={
             "page": chunk_index + 1,
             "section": {
@@ -32,14 +35,18 @@ def make_embedded_chunk(
     )
 
 
-def create_store(tmp_path: Path) -> ChromaVectorStore:
+def create_store(
+    tmp_path: Path,
+) -> ChromaVectorStore:
     return ChromaVectorStore(
         persist_directory=tmp_path / "chroma",
         collection_name="test-nexusrag",
     )
 
 
-def test_upsert_stores_chunks(tmp_path: Path) -> None:
+def test_upsert_stores_chunks(
+    tmp_path: Path,
+) -> None:
     store = create_store(tmp_path)
 
     chunks = [
@@ -108,8 +115,14 @@ def test_query_returns_nearest_chunk(
     )
 
     assert len(results) == 1
-    assert results[0]["chunk_id"] == "chunk-001"
-    assert results[0]["text"] == "Remote work is allowed."
+    assert (
+        results[0]["chunk_id"]
+        == "chunk-001"
+    )
+    assert (
+        results[0]["text"]
+        == "Remote work is allowed."
+    )
 
 
 def test_query_preserves_metadata(
@@ -131,7 +144,10 @@ def test_query_preserves_metadata(
         top_k=1,
     )[0]
 
-    assert result["document_id"] == "doc-001"
+    assert (
+        result["document_id"]
+        == "doc-001"
+    )
     assert result["source"] == "example.pdf"
 
     assert result["metadata"] == {
@@ -142,7 +158,9 @@ def test_query_preserves_metadata(
     }
 
 
-def test_delete_removes_chunk(tmp_path: Path) -> None:
+def test_delete_removes_chunk(
+    tmp_path: Path,
+) -> None:
     store = create_store(tmp_path)
 
     chunk = make_embedded_chunk(
@@ -169,6 +187,7 @@ def test_empty_query_store_returns_empty_list(
     assert store.query(
         vector=[1.0, 0.0, 0.0],
     ) == []
+
 
 def test_delete_document_removes_all_document_chunks(
     tmp_path: Path,
@@ -231,7 +250,9 @@ def test_clear_removes_all_chunks(
 def test_store_data_persists_across_instances(
     tmp_path: Path,
 ) -> None:
-    persist_directory = tmp_path / "persistent-chroma"
+    persist_directory = (
+        tmp_path / "persistent-chroma"
+    )
 
     first_store = ChromaVectorStore(
         persist_directory=persist_directory,
@@ -261,4 +282,113 @@ def test_store_data_persists_across_instances(
         top_k=1,
     )
 
-    assert results[0]["chunk_id"] == "chunk-001"
+    assert (
+        results[0]["chunk_id"]
+        == "chunk-001"
+    )
+
+
+def test_query_supports_document_filter(
+    tmp_path: Path,
+) -> None:
+    store = create_store(tmp_path)
+
+    chunks = [
+        make_embedded_chunk(
+            "chunk-001",
+            0,
+            "Remote work policy.",
+            (1.0, 0.0, 0.0),
+            document_id="doc-001",
+        ),
+        make_embedded_chunk(
+            "chunk-002",
+            1,
+            "Security policy.",
+            (0.9, 0.1, 0.0),
+            document_id="doc-002",
+        ),
+    ]
+
+    store.upsert(chunks)
+
+    results = store.query(
+        vector=[1.0, 0.0, 0.0],
+        filters={
+            "document_id": "doc-001"
+        },
+    )
+
+    assert len(results) == 1
+    assert (
+        results[0]["document_id"]
+        == "doc-001"
+    )
+
+
+def test_query_returns_empty_for_missing_filter(
+    tmp_path: Path,
+) -> None:
+    store = create_store(tmp_path)
+
+    chunk = make_embedded_chunk(
+        "chunk-001",
+        0,
+        "Remote work policy.",
+        (1.0, 0.0, 0.0),
+    )
+
+    store.upsert([chunk])
+
+    results = store.query(
+        vector=[1.0, 0.0, 0.0],
+        filters={
+            "document_id": "missing-doc"
+        },
+    )
+
+    assert results == []
+
+
+def test_query_supports_multiple_filters(
+    tmp_path: Path,
+) -> None:
+    store = create_store(tmp_path)
+
+    chunks = [
+        make_embedded_chunk(
+            "chunk-001",
+            0,
+            "PDF policy.",
+            (1.0, 0.0, 0.0),
+            document_id="doc-001",
+            source="policy.pdf",
+            file_type="pdf",
+        ),
+        make_embedded_chunk(
+            "chunk-002",
+            1,
+            "TXT policy.",
+            (0.9, 0.1, 0.0),
+            document_id="doc-002",
+            source="policy.txt",
+            file_type="txt",
+        ),
+    ]
+
+    store.upsert(chunks)
+
+    results = store.query(
+        vector=[1.0, 0.0, 0.0],
+        filters={
+            "source": "policy.pdf",
+            "file_type": "pdf",
+        },
+    )
+
+    assert len(results) == 1
+    assert (
+        results[0]["source"]
+        == "policy.pdf"
+    )
+    assert results[0]["file_type"] == "pdf"

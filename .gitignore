@@ -24,6 +24,9 @@ Thumbs.db
 .coverage
 htmlcov/
 
+# Ruff
+.ruff_cache/
+
 # Build artifacts
 build/
 dist/
@@ -33,9 +36,13 @@ dist/
 data/raw/*
 !data/raw/.gitkeep
 
-# Generated/processed documents
+# Generated / processed documents
 data/processed/*
 !data/processed/.gitkeep
 
 # Local vector databases / generated RAG data
 data/semantic_verification/
+data/hybrid_verification/
+
+# ChromaDB generated files
+chroma.sqlite3

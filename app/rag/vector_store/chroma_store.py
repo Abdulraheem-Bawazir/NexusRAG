@@ -32,7 +32,10 @@ class ChromaVectorStore:
             name=collection_name
         )
 
-    def upsert(self, embedded_chunks: list[EmbeddedChunk]) -> None:
+    def upsert(
+        self,
+        embedded_chunks: list[EmbeddedChunk],
+    ) -> None:
         """Insert or update embedded chunks."""
 
         if not embedded_chunks:
@@ -74,6 +77,7 @@ class ChromaVectorStore:
         self,
         vector: list[float],
         top_k: int = 5,
+        filters: dict[str, str] | None = None,
     ) -> list[dict[str, Any]]:
         """Search for chunks nearest to the supplied vector."""
 
@@ -86,14 +90,37 @@ class ChromaVectorStore:
         if self.count() == 0:
             return []
 
-        results = self.collection.query(
-            query_embeddings=[vector],
-            n_results=min(top_k, self.count()),
-            include=[
+        where = None
+
+        if filters:
+            conditions = [
+                {key: value}
+                for key, value in filters.items()
+            ]
+
+            if len(conditions) == 1:
+                where = conditions[0]
+            else:
+                where = {"$and": conditions}
+
+        query_kwargs: dict[str, Any] = {
+            "query_embeddings": [vector],
+            "n_results": min(
+                top_k,
+                self.count(),
+            ),
+            "include": [
                 "documents",
                 "metadatas",
                 "distances",
             ],
+        }
+
+        if where is not None:
+            query_kwargs["where"] = where
+
+        results = self.collection.query(
+            **query_kwargs
         )
 
         ids = results["ids"][0]
@@ -111,7 +138,10 @@ class ChromaVectorStore:
             strict=True,
         ):
             original_metadata = json.loads(
-                metadata.get("metadata_json", "{}")
+                metadata.get(
+                    "metadata_json",
+                    "{}",
+                )
             )
 
             matches.append(
@@ -128,28 +158,40 @@ class ChromaVectorStore:
             )
 
         return matches
-    
-    def delete(self, chunk_ids: list[str]) -> None:
+
+    def delete(
+        self,
+        chunk_ids: list[str],
+    ) -> None:
         """Delete chunks by ID."""
 
         if not chunk_ids:
             return
 
-        self.collection.delete(ids=chunk_ids)
+        self.collection.delete(
+            ids=chunk_ids
+        )
 
     def count(self) -> int:
         """Return number of indexed chunks."""
 
         return self.collection.count()
 
-    def delete_document(self, document_id: str) -> None:
+    def delete_document(
+        self,
+        document_id: str,
+    ) -> None:
         """Delete every chunk belonging to one document."""
 
         if not document_id.strip():
-            raise ValueError("document_id cannot be empty.")
+            raise ValueError(
+                "document_id cannot be empty."
+            )
 
         self.collection.delete(
-            where={"document_id": document_id}
+            where={
+                "document_id": document_id
+            }
         )
 
     def clear(self) -> None:
@@ -160,4 +202,6 @@ class ChromaVectorStore:
         ids = existing["ids"]
 
         if ids:
-            self.collection.delete(ids=ids)
+            self.collection.delete(
+                ids=ids
+            )
