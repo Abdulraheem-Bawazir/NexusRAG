@@ -1,13 +1,19 @@
 import logging
 import os
+from pathlib import Path
 
 from fastapi import FastAPI
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
-from app.api.middleware import (
-    RequestLoggingMiddleware,
-)
+from app.api.middleware import RequestLoggingMiddleware
 from app.api.routes import router
 from app.api.schemas import HealthResponse
+
+WEB_DIRECTORY = (
+    Path(__file__).resolve().parents[1]
+    / "web"
+)
 
 
 def configure_logging() -> None:
@@ -52,6 +58,23 @@ def create_app() -> FastAPI:
     application.add_middleware(
         RequestLoggingMiddleware
     )
+
+    application.mount(
+        "/static",
+        StaticFiles(
+            directory=WEB_DIRECTORY,
+        ),
+        name="static",
+    )
+
+    @application.get(
+        "/",
+        include_in_schema=False,
+    )
+    def web_interface() -> FileResponse:
+        return FileResponse(
+            WEB_DIRECTORY / "index.html"
+        )
 
     @application.get(
         "/health",

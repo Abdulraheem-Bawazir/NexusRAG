@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="NexusRAG private-document AI knowledge assistant"
+    >
+
+    <title>NexusRAG</title>
+
+    <link
+        rel="stylesheet"
+        href="/static/styles.css"
+    >
+</head>
+
+<body>
+    <div class="background-grid"></div>
+    <div class="red-glow glow-one"></div>
+    <div class="red-glow glow-two"></div>
+
+    <main class="shell">
+        <header class="topbar">
+            <div class="brand">
+                <div class="brand-mark">
+                    N
+                </div>
+
+                <div>
+                    <h1>NexusRAG</h1>
+
+                    <p>
+                        Private Knowledge Intelligence
+                    </p>
+                </div>
+            </div>
+
+            <div class="system-status">
+                <span
+                    id="status-dot"
+                    class="status-dot"
+                ></span>
+
+                <span id="status-text">
+                    Checking system
+                </span>
+            </div>
+        </header>
+
+        <section class="hero">
+            <div>
+                <p class="eyebrow">
+                    LOCAL-FIRST RAG ENGINE
+                </p>
+
+                <h2>
+                    Ask your documents.
+                    <span>
+                        Trust the evidence.
+                    </span>
+                </h2>
+
+                <p class="hero-copy">
+                    Upload private documents, retrieve
+                    relevant evidence, and generate grounded
+                    answers with traceable citations.
+                </p>
+            </div>
+
+            <div class="hero-actions">
+                <a
+                    class="secondary-button"
+                    href="/docs"
+                    target="_blank"
+                    rel="noreferrer"
+                >
+                    API Docs
+                </a>
+            </div>
+        </section>
+
+        <section class="workspace">
+            <aside class="documents-panel panel">
+                <div class="panel-header">
+                    <div>
+                        <p class="panel-label">
+                            KNOWLEDGE BASE
+                        </p>
+
+                        <h3>Documents</h3>
+                    </div>
+
+                    <span
+                        id="document-count"
+                        class="count-badge"
+                    >
+                        0
+                    </span>
+                </div>
+
+                <label
+                    for="file-input"
+                    class="upload-zone"
+                    id="upload-zone"
+                >
+                    <div class="upload-icon">
+                        +
+                    </div>
+
+                    <strong>
+                        Add document
+                    </strong>
+
+                    <span>
+                        PDF, DOCX or TXT
+                    </span>
+
+                    <input
+                        id="file-input"
+                        type="file"
+                        accept=".pdf,.docx,.txt"
+                        hidden
+                    >
+                </label>
+
+                <div
+                    id="upload-status"
+                    class="upload-status"
+                ></div>
+
+                <div
+                    id="documents-list"
+                    class="documents-list"
+                >
+                    <div class="empty-state">
+                        No documents indexed yet.
+                    </div>
+                </div>
+            </aside>
+
+            <section class="chat-panel panel">
+                <div class="panel-header">
+                    <div>
+                        <p class="panel-label">
+                            GROUNDED QUERY
+                        </p>
+
+                        <h3>Knowledge Assistant</h3>
+                    </div>
+
+                    <button
+                        id="clear-button"
+                        class="ghost-button"
+                        type="button"
+                    >
+                        Clear
+                    </button>
+                </div>
+
+                <div
+                    id="conversation"
+                    class="conversation"
+                >
+                    <div class="welcome-card">
+                        <div class="welcome-symbol">
+                            N
+                        </div>
+
+                        <h4>
+                            NexusRAG is ready.
+                        </h4>
+
+                        <p>
+                            Upload one or more documents,
+                            then ask a question about their
+                            contents.
+                        </p>
+
+                        <div class="capabilities">
+                            <span>Semantic Search</span>
+                            <span>BM25</span>
+                            <span>Hybrid RRF</span>
+                            <span>Local LLM</span>
+                            <span>Citations</span>
+                        </div>
+                    </div>
+                </div>
+
+                <form
+                    id="query-form"
+                    class="query-box"
+                >
+                    <textarea
+                        id="question-input"
+                        rows="2"
+                        placeholder="Ask something about your documents..."
+                        required
+                    ></textarea>
+
+                    <button
+                        id="ask-button"
+                        class="primary-button"
+                        type="submit"
+                    >
+                        Ask Nexus
+                    </button>
+                </form>
+            </section>
+        </section>
+
+        <footer>
+            <span>
+                NexusRAG
+            </span>
+
+            <span class="footer-divider">
+                /
+            </span>
+
+            <span>
+                Local-first retrieval augmented generation
+            </span>
+        </footer>
+    </main>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
