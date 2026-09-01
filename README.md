@@ -981,7 +981,7 @@ NexusRAG/
 Clone:
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/Abdulraheem-Bawazir/NexusRAG
 cd NexusRAG
 ```
 
