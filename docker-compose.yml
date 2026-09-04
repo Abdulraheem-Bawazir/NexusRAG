@@ -18,6 +18,7 @@ services:
 
     volumes:
       - nexusrag_data:/app/data
+      - ./app:/app/app
 
     restart: unless-stopped
 

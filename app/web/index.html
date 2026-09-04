@@ -10,10 +10,10 @@
 
     <meta
         name="description"
-        content="NexusRAG private-document AI knowledge assistant"
+        content="NexusRAG local-first private knowledge intelligence"
     >
 
-    <title>NexusRAG</title>
+    <title>NexusRAG — Private Knowledge Intelligence</title>
 
     <link
         rel="stylesheet"
@@ -22,214 +22,1367 @@
 </head>
 
 <body>
+
     <div class="background-grid"></div>
-    <div class="red-glow glow-one"></div>
-    <div class="red-glow glow-two"></div>
+    <div class="background-glow glow-left"></div>
+    <div class="background-glow glow-right"></div>
 
-    <main class="shell">
-        <header class="topbar">
+    <div class="app-shell">
+
+        <!-- =========================
+             SIDEBAR
+        ========================== -->
+        <aside class="sidebar">
+
             <div class="brand">
-                <div class="brand-mark">
-                    N
-                </div>
 
-                <div>
-                    <h1>NexusRAG</h1>
+                <div class="brand-copy">
 
-                    <p>
-                        Private Knowledge Intelligence
-                    </p>
-                </div>
-            </div>
-
-            <div class="system-status">
-                <span
-                    id="status-dot"
-                    class="status-dot"
-                ></span>
-
-                <span id="status-text">
-                    Checking system
-                </span>
-            </div>
-        </header>
-
-        <section class="hero">
-            <div>
-                <p class="eyebrow">
-                    LOCAL-FIRST RAG ENGINE
-                </p>
-
-                <h2>
-                    Ask your documents.
-                    <span>
-                        Trust the evidence.
+                    <span class="brand-kicker">
+                        PRIVATE KNOWLEDGE AI
                     </span>
-                </h2>
 
-                <p class="hero-copy">
-                    Upload private documents, retrieve
-                    relevant evidence, and generate grounded
-                    answers with traceable citations.
-                </p>
+                    <strong>
+                        Nexus<span>RAG</span>
+                    </strong>
+
+                </div>
+
             </div>
 
-            <div class="hero-actions">
+
+            <nav class="sidebar-nav">
+
+                <button
+                    class="nav-button active"
+                    type="button"
+                    data-view="workspace"
+                >
+                    <svg
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+                        <path d="M4 4h6v6H4z"></path>
+                        <path d="M14 4h6v6h-6z"></path>
+                        <path d="M4 14h6v6H4z"></path>
+                        <path d="M14 14h6v6h-6z"></path>
+                    </svg>
+
+                    <span>
+                        Workspace
+                    </span>
+                </button>
+
+
+                <button
+                    class="nav-button"
+                    type="button"
+                    data-view="knowledge"
+                >
+                    <svg
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+                        <path d="M5 3h10l4 4v14H5z"></path>
+                        <path d="M15 3v5h5"></path>
+                        <path d="M8 12h8"></path>
+                        <path d="M8 16h8"></path>
+                    </svg>
+
+                    <span>
+                        Knowledge
+                    </span>
+                </button>
+
+
+                <button
+                    class="nav-button"
+                    type="button"
+                    data-view="pipeline"
+                >
+                    <svg
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+                        <circle cx="5" cy="12" r="2"></circle>
+                        <circle cx="12" cy="5" r="2"></circle>
+                        <circle cx="19" cy="12" r="2"></circle>
+                        <circle cx="12" cy="19" r="2"></circle>
+
+                        <path d="M6.7 10.9 10.6 6.5"></path>
+                        <path d="M13.4 6.5 17.3 10.9"></path>
+                        <path d="M17.3 13.1 13.4 17.5"></path>
+                        <path d="M10.6 17.5 6.7 13.1"></path>
+                    </svg>
+
+                    <span>
+                        RAG Pipeline
+                    </span>
+                </button>
+
+
                 <a
-                    class="secondary-button"
+                    class="nav-button"
                     href="/docs"
                     target="_blank"
                     rel="noreferrer"
                 >
-                    API Docs
-                </a>
-            </div>
-        </section>
+                    <svg
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+                        <path d="M5 5h9v14H5z"></path>
+                        <path d="M14 10 20 4"></path>
+                        <path d="M16 4h4v4"></path>
+                    </svg>
 
-        <section class="workspace">
-            <aside class="documents-panel panel">
-                <div class="panel-header">
+                    <span>
+                        API Docs
+                    </span>
+                </a>
+
+            </nav>
+
+
+            <div class="sidebar-divider"></div>
+
+
+            <section class="engine-summary">
+
+                <p class="section-label">
+                    RETRIEVAL ENGINE
+                </p>
+
+
+                <div class="engine-row">
+
+                    <span class="engine-indicator"></span>
+
                     <div>
-                        <p class="panel-label">
+                        <strong>
+                            Hybrid Search
+                        </strong>
+
+                        <small>
+                            Semantic + BM25 + RRF
+                        </small>
+                    </div>
+
+                </div>
+
+
+                <div class="engine-row">
+
+                    <span class="engine-indicator"></span>
+
+                    <div>
+                        <strong>
+                            Local Generation
+                        </strong>
+
+                        <small>
+                            Grounded LLM response
+                        </small>
+                    </div>
+
+                </div>
+
+
+                <div class="engine-row">
+
+                    <span class="engine-indicator"></span>
+
+                    <div>
+                        <strong>
+                            Evidence Layer
+                        </strong>
+
+                        <small>
+                            Traceable citations
+                        </small>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <div class="sidebar-spacer"></div>
+
+
+            <div class="privacy-card">
+
+                <div class="privacy-icon">
+
+                    <svg
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+                        <path d="M12 3 5 6v5c0 4.6 2.8 8.2 7 10 4.2-1.8 7-5.4 7-10V6z"></path>
+                        <path d="m9 12 2 2 4-4"></path>
+                    </svg>
+
+                </div>
+
+                <div>
+                    <strong>
+                        Local-first
+                    </strong>
+
+                    <small>
+                        Private document runtime
+                    </small>
+                </div>
+
+            </div>
+
+        </aside>
+
+
+        <!-- =========================
+             MAIN
+        ========================== -->
+        <main class="main-content">
+
+            <header class="topbar">
+
+                <div>
+
+                    <p class="breadcrumb">
+                        NEXUSRAG
+                        <span>/</span>
+
+                        <strong id="view-breadcrumb">
+                            WORKSPACE
+                        </strong>
+                    </p>
+
+                    <h1 id="view-heading">
+                        Knowledge Workspace
+                    </h1>
+
+                </div>
+
+
+                <div class="topbar-actions">
+
+                    <div class="system-status">
+
+                        <span
+                            id="status-dot"
+                            class="status-dot"
+                        ></span>
+
+                        <span id="status-text">
+                            Checking system
+                        </span>
+
+                    </div>
+
+
+                    <button
+                        id="open-knowledge-button"
+                        class="header-button"
+                        type="button"
+                    >
+                        <svg
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <path d="M12 5v14"></path>
+                            <path d="M5 12h14"></path>
+                        </svg>
+
+                        Add source
+                    </button>
+
+                </div>
+
+            </header>
+
+
+            <!-- =========================
+                 WORKSPACE
+            ========================== -->
+            <section
+                id="view-workspace"
+                class="app-view active"
+            >
+
+                <section class="workspace-hero">
+
+                    <div>
+
+                        <p class="hero-label">
+                            <span></span>
+                            LOCAL-FIRST RAG ENGINE
+                        </p>
+
+                        <h2>
+                            Ask your knowledge.
+
+                            <strong>
+                                Verify the evidence.
+                            </strong>
+                        </h2>
+
+                        <p>
+                            Query private documents through hybrid
+                            retrieval and generate grounded answers
+                            with source-aware citations.
+                        </p>
+
+                    </div>
+
+
+                    <div class="hero-stat">
+
+                        <span id="hero-document-count">
+                            0
+                        </span>
+
+                        <small>
+                            indexed sources
+                        </small>
+
+                    </div>
+
+                </section>
+
+
+                <div class="workspace-layout">
+
+                    <!-- CHAT -->
+                    <section class="panel chat-panel">
+
+                        <div class="panel-header">
+
+                            <div class="panel-title">
+
+                                <div class="assistant-mark">
+                                    <span>[</span>
+                                    N
+                                    <span>]</span>
+                                </div>
+
+
+                                <div>
+
+                                    <p class="section-label">
+                                        GROUNDED QUERY
+                                    </p>
+
+                                    <h3>
+                                        Nexus Intelligence
+                                    </h3>
+
+                                </div>
+
+                            </div>
+
+
+                            <button
+                                id="clear-button"
+                                class="icon-text-button"
+                                type="button"
+                            >
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    aria-hidden="true"
+                                >
+                                    <path d="M4 12a8 8 0 1 0 2.3-5.7"></path>
+                                    <path d="M4 5v5h5"></path>
+                                </svg>
+
+                                Clear
+                            </button>
+
+                        </div>
+
+
+                        <div
+                            id="conversation"
+                            class="conversation"
+                        >
+
+                            <div class="welcome-card">
+
+                                <div class="welcome-visual">
+
+                                    <div class="document-stack">
+                                        <span></span>
+                                        <span></span>
+
+                                        <strong>
+                                            [N]
+                                        </strong>
+                                    </div>
+
+
+                                    <div class="data-nodes">
+                                        <i></i>
+                                        <i></i>
+                                        <i></i>
+                                        <i></i>
+                                        <i></i>
+                                    </div>
+
+                                </div>
+
+
+                                <p class="section-label">
+                                    KNOWLEDGE LAYER READY
+                                </p>
+
+
+                                <h4>
+                                    Retrieve. Ground. Cite.
+                                </h4>
+
+
+                                <p>
+                                    Ask a question about your indexed
+                                    documents and NexusRAG will answer
+                                    from retrieved evidence.
+                                </p>
+
+
+                                <div class="capability-list">
+
+                                    <span>
+                                        Semantic Search
+                                    </span>
+
+                                    <span>
+                                        BM25
+                                    </span>
+
+                                    <span>
+                                        Hybrid RRF
+                                    </span>
+
+                                    <span>
+                                        Local LLM
+                                    </span>
+
+                                    <span>
+                                        Citations
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <form
+                            id="query-form"
+                            class="query-composer"
+                        >
+
+                            <div class="composer-meta">
+
+                                <span>
+                                    <i></i>
+                                    HYBRID RETRIEVAL
+                                </span>
+
+                                <span id="composer-scope-label">
+                                    ALL SOURCES
+                                </span>
+
+                            </div>
+
+
+                            <textarea
+                                id="question-input"
+                                rows="2"
+                                placeholder="Ask a grounded question about your documents..."
+                                required
+                            ></textarea>
+
+
+                            <div class="composer-footer">
+
+                                <span>
+                                    Enter to send · Shift + Enter for line break
+                                </span>
+
+
+                                <button
+                                    id="ask-button"
+                                    class="primary-button"
+                                    type="submit"
+                                >
+
+                                    <span id="ask-button-label">
+                                        Ask Nexus
+                                    </span>
+
+
+                                    <svg
+                                        viewBox="0 0 24 24"
+                                        aria-hidden="true"
+                                    >
+                                        <path d="m7 17 10-10"></path>
+                                        <path d="M8 7h9v9"></path>
+                                    </svg>
+
+                                </button>
+
+                            </div>
+
+                        </form>
+
+                    </section>
+
+
+                    <!-- INSPECTOR -->
+                    <aside class="inspector-column">
+
+                        <section class="panel settings-panel">
+
+                            <div class="panel-header compact">
+
+                                <div>
+
+                                    <p class="section-label">
+                                        SEARCH CONTROL
+                                    </p>
+
+                                    <h3>
+                                        Retrieval Settings
+                                    </h3>
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="settings-body">
+
+                                <label class="form-field">
+
+                                    <span>
+                                        Search scope
+                                    </span>
+
+                                    <select id="source-filter">
+
+                                        <option value="">
+                                            All indexed sources
+                                        </option>
+
+                                    </select>
+
+                                </label>
+
+
+                                <label class="form-field">
+
+                                    <span class="range-heading">
+
+                                        <span>
+                                            Top K
+                                        </span>
+
+                                        <strong id="top-k-value">
+                                            5
+                                        </strong>
+
+                                    </span>
+
+
+                                    <input
+                                        id="top-k-input"
+                                        type="range"
+                                        min="1"
+                                        max="20"
+                                        step="1"
+                                        value="5"
+                                    >
+
+
+                                    <small>
+                                        Number of retrieval candidates requested.
+                                    </small>
+
+                                </label>
+
+                            </div>
+
+                        </section>
+
+
+                        <section class="panel evidence-panel">
+
+                            <div class="panel-header compact">
+
+                                <div>
+
+                                    <p class="section-label">
+                                        RETURNED EVIDENCE
+                                    </p>
+
+                                    <h3>
+                                        Citations
+                                    </h3>
+
+                                </div>
+
+
+                                <span
+                                    id="evidence-count"
+                                    class="count-badge"
+                                >
+                                    0
+                                </span>
+
+                            </div>
+
+
+                            <div
+                                id="evidence-list"
+                                class="evidence-list"
+                            >
+
+                                <div class="evidence-empty">
+
+                                    <svg
+                                        viewBox="0 0 24 24"
+                                        aria-hidden="true"
+                                    >
+                                        <path d="M5 3h10l4 4v14H5z"></path>
+                                        <path d="M15 3v5h5"></path>
+                                        <path d="M8 13h8"></path>
+                                        <path d="M8 17h5"></path>
+                                    </svg>
+
+
+                                    <strong>
+                                        No citations yet
+                                    </strong>
+
+
+                                    <small>
+                                        Run a query to inspect returned evidence.
+                                    </small>
+
+                                </div>
+
+                            </div>
+
+                        </section>
+
+                    </aside>
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================
+                 KNOWLEDGE
+            ========================== -->
+            <section
+                id="view-knowledge"
+                class="app-view"
+            >
+
+                <section class="page-intro">
+
+                    <div>
+
+                        <p class="hero-label">
+                            <span></span>
                             KNOWLEDGE BASE
                         </p>
 
-                        <h3>Documents</h3>
-                    </div>
 
-                    <span
-                        id="document-count"
-                        class="count-badge"
-                    >
-                        0
-                    </span>
-                </div>
+                        <h2>
+                            Source Library
+                        </h2>
 
-                <label
-                    for="file-input"
-                    class="upload-zone"
-                    id="upload-zone"
-                >
-                    <div class="upload-icon">
-                        +
-                    </div>
-
-                    <strong>
-                        Add document
-                    </strong>
-
-                    <span>
-                        PDF, DOCX or TXT
-                    </span>
-
-                    <input
-                        id="file-input"
-                        type="file"
-                        accept=".pdf,.docx,.txt"
-                        hidden
-                    >
-                </label>
-
-                <div
-                    id="upload-status"
-                    class="upload-status"
-                ></div>
-
-                <div
-                    id="documents-list"
-                    class="documents-list"
-                >
-                    <div class="empty-state">
-                        No documents indexed yet.
-                    </div>
-                </div>
-            </aside>
-
-            <section class="chat-panel panel">
-                <div class="panel-header">
-                    <div>
-                        <p class="panel-label">
-                            GROUNDED QUERY
-                        </p>
-
-                        <h3>Knowledge Assistant</h3>
-                    </div>
-
-                    <button
-                        id="clear-button"
-                        class="ghost-button"
-                        type="button"
-                    >
-                        Clear
-                    </button>
-                </div>
-
-                <div
-                    id="conversation"
-                    class="conversation"
-                >
-                    <div class="welcome-card">
-                        <div class="welcome-symbol">
-                            N
-                        </div>
-
-                        <h4>
-                            NexusRAG is ready.
-                        </h4>
 
                         <p>
-                            Upload one or more documents,
-                            then ask a question about their
-                            contents.
+                            Upload and manage private documents
+                            available to the NexusRAG retrieval layer.
                         </p>
 
-                        <div class="capabilities">
-                            <span>Semantic Search</span>
-                            <span>BM25</span>
-                            <span>Hybrid RRF</span>
-                            <span>Local LLM</span>
-                            <span>Citations</span>
-                        </div>
                     </div>
+
+                </section>
+
+
+                <div class="knowledge-layout">
+
+                    <section class="panel upload-panel">
+
+                        <label
+                            id="upload-zone"
+                            class="upload-zone"
+                            for="file-input"
+                        >
+
+                            <input
+                                id="file-input"
+                                type="file"
+                                accept=".pdf,.docx,.txt"
+                                multiple
+                                hidden
+                            >
+
+
+                            <div class="upload-graphic">
+
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    aria-hidden="true"
+                                >
+                                    <path d="M5 3h10l4 4v14H5z"></path>
+                                    <path d="M15 3v5h5"></path>
+                                    <path d="M12 17V10"></path>
+                                    <path d="m9 13 3-3 3 3"></path>
+                                </svg>
+
+                            </div>
+
+
+                            <strong>
+                                Add knowledge sources
+                            </strong>
+
+
+                            <p>
+                                Drop files here or click to browse.
+                            </p>
+
+
+                            <span>
+                                PDF · DOCX · TXT
+                            </span>
+
+                        </label>
+
+
+                        <div
+                            id="upload-status"
+                            class="upload-status"
+                        ></div>
+
+                    </section>
+
+
+                    <section class="panel library-panel">
+
+                        <div class="library-header">
+
+                            <div>
+
+                                <p class="section-label">
+                                    INDEXED SOURCES
+                                </p>
+
+                                <h3>
+                                    Documents
+                                </h3>
+
+                            </div>
+
+
+                            <div class="library-actions">
+
+                                <label class="document-search">
+
+                                    <svg
+                                        viewBox="0 0 24 24"
+                                        aria-hidden="true"
+                                    >
+                                        <circle
+                                            cx="11"
+                                            cy="11"
+                                            r="6"
+                                        ></circle>
+
+                                        <path d="m16 16 4 4"></path>
+                                    </svg>
+
+
+                                    <input
+                                        id="document-search"
+                                        type="search"
+                                        placeholder="Filter documents..."
+                                    >
+
+                                </label>
+
+
+                                <span
+                                    id="document-count"
+                                    class="count-badge"
+                                >
+                                    0
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="document-table-header">
+
+                            <span>
+                                Source
+                            </span>
+
+                            <span>
+                                Type
+                            </span>
+
+                            <span>
+                                ID
+                            </span>
+
+                            <span></span>
+
+                        </div>
+
+
+                        <div
+                            id="documents-list"
+                            class="documents-list"
+                        >
+
+                            <div class="document-empty">
+                                No documents indexed yet.
+                            </div>
+
+                        </div>
+
+                    </section>
+
                 </div>
 
-                <form
-                    id="query-form"
-                    class="query-box"
-                >
-                    <textarea
-                        id="question-input"
-                        rows="2"
-                        placeholder="Ask something about your documents..."
-                        required
-                    ></textarea>
-
-                    <button
-                        id="ask-button"
-                        class="primary-button"
-                        type="submit"
-                    >
-                        Ask Nexus
-                    </button>
-                </form>
             </section>
-        </section>
 
-        <footer>
-            <span>
-                NexusRAG
-            </span>
 
-            <span class="footer-divider">
-                /
-            </span>
+            <!-- =========================
+                 RAG PIPELINE
+            ========================== -->
+            <section
+                id="view-pipeline"
+                class="app-view"
+            >
 
-            <span>
-                Local-first retrieval augmented generation
-            </span>
-        </footer>
-    </main>
+                <section class="page-intro">
+
+                    <div>
+
+                        <p class="hero-label">
+                            <span></span>
+                            RETRIEVAL ARCHITECTURE
+                        </p>
+
+
+                        <h2>
+                            RAG Pipeline
+                        </h2>
+
+
+                        <p>
+                            A visual map of the real NexusRAG
+                            document-to-answer flow.
+                        </p>
+
+                    </div>
+
+                </section>
+
+
+                <section class="panel pipeline-panel">
+
+                    <div class="pipeline-flow">
+
+                        <article class="pipeline-stage">
+
+                            <span class="stage-number">
+                                01
+                            </span>
+
+
+                            <div class="stage-icon">
+
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    aria-hidden="true"
+                                >
+                                    <path d="M5 3h10l4 4v14H5z"></path>
+                                    <path d="M15 3v5h5"></path>
+                                </svg>
+
+                            </div>
+
+
+                            <strong>
+                                Documents
+                            </strong>
+
+
+                            <small>
+                                PDF · DOCX · TXT
+                            </small>
+
+                        </article>
+
+
+                        <div class="pipeline-link">
+                            <span></span>
+                        </div>
+
+
+                        <article class="pipeline-stage">
+
+                            <span class="stage-number">
+                                02
+                            </span>
+
+
+                            <div class="stage-icon">
+
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    aria-hidden="true"
+                                >
+                                    <path d="M4 7h16"></path>
+                                    <path d="M4 12h12"></path>
+                                    <path d="M4 17h9"></path>
+                                </svg>
+
+                            </div>
+
+
+                            <strong>
+                                Parsing
+                            </strong>
+
+
+                            <small>
+                                Normalized content
+                            </small>
+
+                        </article>
+
+
+                        <div class="pipeline-link">
+                            <span></span>
+                        </div>
+
+
+                        <article class="pipeline-stage">
+
+                            <span class="stage-number">
+                                03
+                            </span>
+
+
+                            <div class="stage-icon">
+
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    aria-hidden="true"
+                                >
+                                    <path d="M5 5h5v5H5z"></path>
+                                    <path d="M14 5h5v5h-5z"></path>
+                                    <path d="M5 14h5v5H5z"></path>
+                                    <path d="M14 14h5v5h-5z"></path>
+                                </svg>
+
+                            </div>
+
+
+                            <strong>
+                                Chunking
+                            </strong>
+
+
+                            <small>
+                                Deterministic chunks
+                            </small>
+
+                        </article>
+
+
+                        <div class="pipeline-link">
+                            <span></span>
+                        </div>
+
+
+                        <article class="pipeline-stage accent">
+
+                            <span class="stage-number">
+                                04
+                            </span>
+
+
+                            <div class="stage-icon">
+
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    aria-hidden="true"
+                                >
+                                    <circle cx="6" cy="6" r="2"></circle>
+                                    <circle cx="18" cy="6" r="2"></circle>
+                                    <circle cx="12" cy="18" r="2"></circle>
+
+                                    <path d="m7.7 7.1 3.2 8.7"></path>
+                                    <path d="m16.3 7.1-3.2 8.7"></path>
+                                    <path d="M8 6h8"></path>
+                                </svg>
+
+                            </div>
+
+
+                            <strong>
+                                Embeddings
+                            </strong>
+
+
+                            <small>
+                                MiniLM · 384D
+                            </small>
+
+                        </article>
+
+
+                        <div class="pipeline-link">
+                            <span></span>
+                        </div>
+
+
+                        <article class="pipeline-stage">
+
+                            <span class="stage-number">
+                                05
+                            </span>
+
+
+                            <div class="stage-icon">
+
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    aria-hidden="true"
+                                >
+                                    <ellipse
+                                        cx="12"
+                                        cy="5"
+                                        rx="7"
+                                        ry="3"
+                                    ></ellipse>
+
+                                    <path d="M5 5v6c0 1.7 3.1 3 7 3s7-1.3 7-3V5"></path>
+                                    <path d="M5 11v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"></path>
+                                </svg>
+
+                            </div>
+
+
+                            <strong>
+                                ChromaDB
+                            </strong>
+
+
+                            <small>
+                                Persistent vectors
+                            </small>
+
+                        </article>
+
+                    </div>
+
+
+                    <div class="retrieval-split">
+
+                        <article class="retrieval-card">
+
+                            <p class="section-label">
+                                VECTOR PATH
+                            </p>
+
+
+                            <strong>
+                                Semantic Retrieval
+                            </strong>
+
+
+                            <small>
+                                Finds conceptually relevant chunks
+                                through embedding similarity.
+                            </small>
+
+                        </article>
+
+
+                        <div class="fusion-card">
+
+                            <span>
+                                RRF
+                            </span>
+
+
+                            <strong>
+                                Rank Fusion
+                            </strong>
+
+
+                            <small>
+                                Combines independent retrieval rankings.
+                            </small>
+
+                        </div>
+
+
+                        <article class="retrieval-card">
+
+                            <p class="section-label">
+                                LEXICAL PATH
+                            </p>
+
+
+                            <strong>
+                                BM25 Retrieval
+                            </strong>
+
+
+                            <small>
+                                Finds exact terms and keyword relevance.
+                            </small>
+
+                        </article>
+
+                    </div>
+
+
+                    <div class="pipeline-flow lower">
+
+                        <article class="pipeline-stage">
+
+                            <span class="stage-number">
+                                06
+                            </span>
+
+
+                            <div class="stage-icon">
+
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    aria-hidden="true"
+                                >
+                                    <path d="M4 6h16"></path>
+                                    <path d="M7 12h10"></path>
+                                    <path d="M10 18h4"></path>
+                                </svg>
+
+                            </div>
+
+
+                            <strong>
+                                Ranked Context
+                            </strong>
+
+
+                            <small>
+                                Evidence selection
+                            </small>
+
+                        </article>
+
+
+                        <div class="pipeline-link">
+                            <span></span>
+                        </div>
+
+
+                        <article class="pipeline-stage accent">
+
+                            <span class="stage-number">
+                                07
+                            </span>
+
+
+                            <div class="stage-icon text-icon">
+                                N
+                            </div>
+
+
+                            <strong>
+                                Local LLM
+                            </strong>
+
+
+                            <small>
+                                Grounded generation
+                            </small>
+
+                        </article>
+
+
+                        <div class="pipeline-link">
+                            <span></span>
+                        </div>
+
+
+                        <article class="pipeline-stage">
+
+                            <span class="stage-number">
+                                08
+                            </span>
+
+
+                            <div class="stage-icon">
+
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    aria-hidden="true"
+                                >
+                                    <path d="M7 4h10v16H7z"></path>
+                                    <path d="M10 9h4"></path>
+                                    <path d="M10 13h4"></path>
+                                    <path d="m10 17 1 1 3-3"></path>
+                                </svg>
+
+                            </div>
+
+
+                            <strong>
+                                Cited Answer
+                            </strong>
+
+
+                            <small>
+                                Traceable evidence
+                            </small>
+
+                        </article>
+
+                    </div>
+
+                </section>
+
+
+                <div class="pipeline-notes">
+
+                    <article class="panel info-card">
+
+                        <span>
+                            01
+                        </span>
+
+
+                        <div>
+
+                            <strong>
+                                Hybrid by design
+                            </strong>
+
+
+                            <p>
+                                Semantic retrieval and BM25 are
+                                combined through Reciprocal Rank Fusion.
+                            </p>
+
+                        </div>
+
+                    </article>
+
+
+                    <article class="panel info-card">
+
+                        <span>
+                            02
+                        </span>
+
+
+                        <div>
+
+                            <strong>
+                                Persistent knowledge
+                            </strong>
+
+
+                            <p>
+                                ChromaDB stores document chunks and
+                                metadata for local retrieval.
+                            </p>
+
+                        </div>
+
+                    </article>
+
+
+                    <article class="panel info-card">
+
+                        <span>
+                            03
+                        </span>
+
+
+                        <div>
+
+                            <strong>
+                                Evidence first
+                            </strong>
+
+
+                            <p>
+                                Answers expose source citations instead
+                                of hiding the retrieved evidence.
+                            </p>
+
+                        </div>
+
+                    </article>
+
+                </div>
+
+            </section>
+
+
+            <footer class="app-footer">
+
+                <span>
+                    NexusRAG
+                </span>
+
+                <span>
+                    /
+                </span>
+
+                <span>
+                    Retrieve · Augment · Generate
+                </span>
+
+                <span class="footer-spacer"></span>
+
+                <span>
+                    Local-first private knowledge
+                </span>
+
+            </footer>
+
+        </main>
+
+    </div>
+
+
+    <div
+        id="toast-region"
+        class="toast-region"
+        aria-live="polite"
+    ></div>
+
 
     <script src="/static/app.js"></script>
+
 </body>
 </html>
